@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BlendClone M1 — Viewport MVP</title>
+<style>
+  html,body{margin:0;height:100%;background:#1e1e1e;color:#ddd;font-family:Consolas,monospace}
+  #bar{padding:8px 12px;background:#2d2d2d;display:flex;gap:12px;align-items:center}
+  #c{width:100vw;height:calc(100vh - 41px);display:block;touch-action:none}
+  button{background:#444;color:#fff;border:1px solid #666;padding:4px 10px;cursor:pointer}
+  #stats{margin-left:auto;font-size:12px}
+</style>
+</head>
+<body>
+<div id="bar">
+  <b>BlendClone M1</b>
+  <span>drag=orbit · RMB/shift-drag=pan · wheel=zoom</span>
+  <button id="snap">PNG snapshot</button>
+  <button id="mode">mode: solid</button>
+  <span id="stats">init…</span>
+</div>
+<canvas id="c"></canvas>
+<script>
+"use strict";
+// Minimal math (no allocs in loop where it matters)
+function mat4Persp(out,fov,asp,n,f){
+  const t=1/Math.tan(fov/2); out.fill(0);
+  out[0]=t/asp; out[5]=t; out[10]=(f+n)/(n-f); out[11]=-1; out[14]=2*f*n/(n-f); return out;
+}
+function mat4LookAt(out,eye,tgt,up){
+  let zx=eye[0]-tgt[0],zy=eye[1]-tgt[1],zz=eye[2]-tgt[2];
+  let l=Math.hypot(zx,zy,zz); zx/=l;zy/=l;zz/=l;
+  let xx=up[1]*zz-up[2]*zy, xy=up[2]*zx-up[0]*zz, xz=up[0]*zy-up[1]*zx;
+  l=Math.hypot(xx,xy,xz)||1; xx/=l;xy/=l;xz/=l;
+  const yx=zy*xz-zz*xy, yy=zz*xx-zx*xz, yz=zx*xy-zy*xx;
+  out[0]=xx;out[1]=yx;out[2]=zx;out[3]=0; out[4]=xy;out[5]=yy;out[6]=zy;out[7]=0;
+  out[8]=xz;out[9]=yz;out[10]=zz;out[11]=0;
+  out[12]=-(xx*eye[0]+xy*eye[1]+xz*eye[2]); out[13]=-(yx*eye[0]+yy*eye[1]+yz*eye[2]);
+  out[14]=-(zx*eye[0]+zy*eye[1]+zz*eye[2]); out[15]=1; return out;
+}
+function mat4Mul(out,a,b){
+  const o=new Float32Array(16);
+  for(let c=0;c<4;c++)for(let r=0;r<4;r++){o[c*4+r]=a[r]*b[c*4]+a[4+r]*b[c*4+1]+a[8+r]*b[c*4+2]+a[12+r]*b[c*4+3];}
+  out.set(o); return out;
+}
+function mat4RotY(out,rad,m){
+  const c=Math.cos(rad),s=Math.sin(rad);
+  const R=new Float32Array([c,0,-s,0, 0,1,0,0, s,0,c,0, 0,0,0,1]);
+  return mat4Mul(out,m,R);
+}
+
+const canvas=document.getElementById('c'), stats=document.getElementById('stats');
+const gl=canvas.getContext('webgl2',{antialias:false});
+if(!gl){stats.textContent='WebGL2 NOT available on this GPU/browser — MVP blocked';throw new Error('no webgl2');}
+
+const vs=`#version 300 es
+layout(location=0) in vec3 p; layout(location=1) in vec3 n;
+uniform mat4 MVP; uniform mat4 MODEL;
+out vec3 vN; out vec3 vP;
+void main(){ vN=mat3(MODEL)*n; vP=p; gl_Position=MVP*vec4(p,1.0); }`;
+const fs=`#version 300 es
+precision highp float;
+in vec3 vN; in vec3 vP; out vec4 o;
+uniform vec3 ALB; uniform int MODE;
+void main(){
+  vec3 N=normalize(vN);
+  if(MODE==0){ // wireframe-ish solid flat
+    o=vec4(ALB,1.0); return;
+  }
+  vec3 L=normalize(vec3(0.5,0.8,0.6));
+  float dif=max(dot(N,L),0.0);
+  float hemi=0.45+0.25*N.y;
+  vec3 col=ALB*(hemi+dif*0.8);
+  // studio gradient by view height
+  col+=vec3(0.06,0.07,0.09)*(vP.y*0.5+0.5);
+  o=vec4(pow(col,vec3(1.0/2.2)),1.0);
+}`;
+function sh(t,s){const h=gl.createShader(t);gl.shaderSource(h,s);gl.compileShader(h);
+  if(!gl.getShaderParameter(h,gl.COMPILE_STATUS))throw new Error(gl.getShaderInfoLog(h));return h;}
+const prog=gl.createProgram();
+gl.attachShader(prog,sh(gl.VERTEX_SHADER,vs));gl.attachShader(prog,sh(gl.FRAGMENT_SHADER,fs));
+gl.linkProgram(prog);gl.useProgram(prog);
+const uMVP=gl.getUniformLocation(prog,'MVP'),uMODEL=gl.getUniformLocation(prog,'MODEL'),
+      uALB=gl.getUniformLocation(prog,'ALB'),uMODE=gl.getUniformLocation(prog,'MODE');
+
+// Cube: 24 verts (per-face normals), 36 idx
+const P=new Float32Array([
+ -1,-1, 1,  1,-1, 1,  1,1,1, -1,1,1, // +z
+ -1,-1,-1, -1,1,-1,  1,1,-1,  1,-1,-1, // -z
+ -1,1,-1, -1,1,1,  1,1,1,  1,1,-1, // +y
+ -1,-1,-1,  1,-1,-1,  1,-1,1, -1,-1,1, // -y
+  1,-1,-1,  1,1,-1,  1,1,1,  1,-1,1, // +x
+ -1,-1,-1, -1,-1,1, -1,1,1, -1,1,-1, // -x
+]);
+const N=new Float32Array([
+ 0,0,1, 0,0,1, 0,0,1, 0,0,1,  0,0,-1, 0,0,-1, 0,0,-1, 0,0,-1,
+ 0,1,0, 0,1,0, 0,1,0, 0,1,0,  0,-1,0, 0,-1,0, 0,-1,0, 0,-1,0,
+ 1,0,0, 1,0,0, 1,0,0, 1,0,0,  -1,0,0, -1,0,0, -1,0,0, -1,0,0,
+]);
+const I=new Uint16Array([0,1,2,0,2,3, 4,5,6,4,6,7, 8,9,10,8,10,11,
+ 12,13,14,12,14,15, 16,17,18,16,18,19, 20,21,22,20,22,23]);
+const vao=gl.createVertexArray();gl.bindVertexArray(vao);
+function vbo(data,loc,n){const b=gl.createBuffer();gl.bindBuffer(gl.ARRAY_BUFFER,b);
+  gl.bufferData(gl.ARRAY_BUFFER,data,gl.STATIC_DRAW);gl.enableVertexAttribArray(loc);
+  gl.vertexAttribPointer(loc,n,gl.FLOAT,false,0,0);}
+vbo(P,0,3);vbo(N,1,3);
+const ibo=gl.createBuffer();gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,ibo);
+gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,I,gl.STATIC_DRAW);
+gl.enable(gl.DEPTH_TEST);
+
+// Orbit state
+let theta=0.7,phi=1.1,radius=6,tx=0,ty=0,tz=0,spin=true,mode=1;
+let drag=false,pan=false,lx=0,ly=0;
+canvas.addEventListener('pointerdown',e=>{drag=true;lx=e.clientX;ly=e.clientY;
+  pan=(e.button===2||e.shiftKey);canvas.setPointerCapture(e.pointerId);});
+canvas.addEventListener('pointermove',e=>{if(!drag)return;
+  const dx=e.clientX-lx,dy=e.clientY-ly;lx=e.clientX;ly=e.clientY;
+  if(pan){tx-=dx*radius*0.0016*Math.cos(theta);tz-=dx*radius*0.0016*Math.sin(theta);ty+=dy*radius*0.0016;}
+  else{theta-=dx*0.005;phi=Math.min(Math.PI-0.05,Math.max(0.05,phi-dy*0.005));}});
+canvas.addEventListener('pointerup',()=>drag=false);
+canvas.addEventListener('wheel',e=>{e.preventDefault();radius=Math.min(50,Math.max(1.5,radius*Math.exp(e.deltaY*0.001)));},{passive:false});
+canvas.addEventListener('contextmenu',e=>e.preventDefault());
+document.getElementById('mode').onclick=e=>{mode=(mode+1)%2;spin=(mode===1)?spin:spin;
+  e.target.textContent='mode: '+(mode?'solid':'flat');};
+document.getElementById('snap').onclick=()=>{canvas.toBlob(b=>{const a=document.createElement('a');
+  a.href=URL.createObjectURL(b);a.download='blendclone-m1.png';a.click();});};
+
+const MVP=new Float32Array(16),VIEW=new Float32Array(16),PROJ=new Float32Array(16),
+      MODEL=new Float32Array(16),TMP=new Float32Array(16);
+const eye=[0,0,0],tgt=[0,0,0];
+function resize(){const dpr=Math.min(devicePixelRatio||1,1.5);
+  canvas.width=innerWidth*dpr;canvas.height=(innerHeight-41)*dpr;
+  gl.viewport(0,0,canvas.width,canvas.height);}
+addEventListener('resize',resize);resize();
+
+let frames=0,t0=performance.now();
+function frame(t){
+  if(spin&&!drag)theta+=0.008;
+  eye[0]=tx+radius*Math.sin(phi)*Math.sin(theta);
+  eye[1]=ty+radius*Math.cos(phi);
+  eye[2]=tz+radius*Math.sin(phi)*Math.cos(theta);
+  tgt[0]=tx;tgt[1]=ty;tgt[2]=tz;
+  mat4LookAt(VIEW,eye,tgt,[0,1,0]);
+  mat4Persp(PROJ,50*Math.PI/180,canvas.width/canvas.height,0.1,100);
+  MODEL.set([1,0,0,0, 0,1,0,0, 0,0,1,0, 0,0,0,1]);
+  mat4RotY(TMP,spin?0:0,MODEL); // model stays axis-aligned; camera orbits (clearer MVP)
+  mat4Mul(MVP,PROJ,VIEW);
+  // MVP already = P*V; fold model (identity) — keep simple for M1
+  gl.clearColor(0.12,0.12,0.14,1);gl.clear(gl.COLOR_BUFFER_BIT|gl.DEPTH_BUFFER_BIT);
+  gl.useProgram(prog);
+  gl.uniformMatrix4fv(uMVP,false,MVP);gl.uniformMatrix4fv(uMODEL,false,MODEL);
+  gl.uniform3f(uALB,0.9,0.35,0.15);gl.uniform1i(uMODE,mode);
+  gl.bindVertexArray(vao);gl.drawElements(gl.TRIANGLES,I.length,gl.UNSIGNED_SHORT,0);
+  frames++;const dt=t-t0;
+  if(dt>500){stats.textContent=`${(frames*1000/dt).toFixed(0)}fps · 12 tris · 1 draw · WebGL2 OK · Adreno path via ANGLE`;
+    frames=0;t0=t;}
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>

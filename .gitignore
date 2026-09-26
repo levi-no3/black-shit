@@ -1,0 +1,37 @@
+# Secrets - never commit real tokens
+.env
+*.pid
+bot.pid
+quicksharp_config.json
+quicksharp_data.json
+
+# Logs
+*.log
+bot_err.log
+bot.log
+deletes.log
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+env/
+
+# Local runtime / browser state
+.browser_profile/
+.playwright-mcp/
+browser_history.jsonl
+hits.jsonl
+mirror_latest.jpg
+
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# OneDrive lock files
+*.tmp
+~$*

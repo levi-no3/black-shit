@@ -1,0 +1,19 @@
+{
+  "url": "https://example.com/",
+  "title": "Example Domain",
+  "ts": "2026-09-24T18:33:17",
+  "mirror": "C:\\Users\\leviw\\OneDrive\\Documents\\Default Project\\mirror_latest.jpg",
+  "tabs": [
+    {
+      "index": 0,
+      "url": "https://example.com/",
+      "title": "Example Domain"
+    },
+    {
+      "index": 1,
+      "url": "about:blank",
+      "title": ""
+    }
+  ],
+  "active_tab": 0
+}

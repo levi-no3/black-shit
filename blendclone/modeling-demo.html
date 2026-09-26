@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BlendClone M1 — Modeling Demo</title>
+<style>
+  html,body{margin:0;background:#1e1e1e;color:#ddd;font-family:Consolas,monospace}
+  #bar{padding:8px 12px;background:#2d2d2d;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  button{background:#444;color:#fff;border:1px solid #666;padding:4px 10px;cursor:pointer;font:inherit}
+  #stats{padding:8px 12px 0;font-size:12px}
+  #c{background:#141416;display:block;margin:8px auto;border:1px solid #333}
+  #log{background:#111;border:1px solid #333;margin:8px 12px;padding:8px;height:170px;overflow:auto;white-space:pre-wrap;font-size:12px}
+</style>
+</head>
+<body>
+<div id="bar">
+  <b>BlendClone M1 · modeling</b>
+  <button id="bCube">cube</button>
+  <button id="bSphere">sphere</button>
+  <button id="bPlane">plane</button>
+  <button id="bCyl">cylinder</button>
+  <button id="bMove">translate +X</button>
+  <button id="bRot">rotate Y 15°</button>
+  <button id="bUndo">undo</button>
+  <button id="bRedo">redo</button>
+  <button id="bObj">export OBJ</button>
+  <button id="bTest">run self-test</button>
+</div>
+<div id="stats">no mesh</div>
+<canvas id="c" width="640" height="360"></canvas>
+<pre id="log"></pre>
+<script type="module">
+import { createCube, createPlane, createUVSphere, createCylinder } from "./src/modeling/primitives.js";
+import { translate, rotateY } from "./src/modeling/transform.js";
+import { exportOBJ, importOBJ } from "./src/io/obj.js";
+import { UndoStack } from "./src/core/undo.js";
+
+const logEl = document.getElementById("log"), statsEl = document.getElementById("stats");
+const log = (m) => { logEl.textContent += m + "\n"; logEl.scrollTop = logEl.scrollHeight; };
+const cv = document.getElementById("c"), ctx = cv.getContext("2d");
+let mesh = null, spin = 0.6;
+const undo = new UndoStack();
+
+// Snapshot-command: do() applies fn once, captures after-state for redo.
+function commit(label, fn) {
+  const before = mesh ? mesh.clone() : null;
+  let after = null;
+  undo.push({ label, do() {
+    mesh = before ? before.clone() : null;
+    if (!after && mesh) { fn(mesh); after = mesh.clone(); }
+    else if (after) mesh = after.clone();
+    refresh();
+  }, undo() { mesh = before ? before.clone() : null; refresh(); } });
+}
+function refresh() {
+  if (!mesh) { statsEl.textContent = "no mesh"; return; }
+  const b = mesh.computeBounds();
+  statsEl.textContent = `${mesh.name || "mesh"} · ${mesh.vertCount} verts · ${mesh.triCount} tris · ` +
+    `center (${b.center[0].toFixed(2)},${b.center[1].toFixed(2)},${b.center[2].toFixed(2)}) · r=${b.radius.toFixed(2)}`;
+}
+function draw() {
+  ctx.clearRect(0, 0, cv.width, cv.height);
+  if (!mesh) return;
+  const P = mesh.positions, I = mesh.indices, n = mesh.vertCount;
+  const r = Math.max(mesh.computeBounds().radius, 1e-6);
+  const k = (Math.min(cv.width, cv.height) / 2 * 0.9) / r;
+  const ca = Math.cos(spin), sa = Math.sin(spin), cx = cv.width / 2, cy = cv.height / 2;
+  const px = new Float32Array(n * 2);
+  for (let i = 0; i < n; i++) {
+    const x = P[i * 3], y = P[i * 3 + 1], z = P[i * 3 + 2];
+    px[i * 2] = cx + (x * ca + z * sa) * k;
+    px[i * 2 + 1] = cy - (y * 0.9 + (-x * sa + z * ca) * 0.35) * k;
+  }
+  ctx.strokeStyle = "#7fd4ff"; ctx.lineWidth = 1; ctx.beginPath();
+  for (let t = 0; t < I.length; t += 3) for (let e = 0; e < 3; e++) {
+    const a = I[t + e] * 2, b = I[t + (e + 1) % 3] * 2;
+    ctx.moveTo(px[a], px[a + 1]); ctx.lineTo(px[b], px[b + 1]);
+  }
+  ctx.stroke();
+}
+function newMesh(m) {
+  mesh = m; undo.clear(); refresh();
+  log(`new ${m.name}: ${m.vertCount} verts, ${m.triCount} tris`);
+}
+document.getElementById("bCube").onclick = () => newMesh(createCube(2));
+document.getElementById("bSphere").onclick = () => newMesh(createUVSphere(24, 16));
+document.getElementById("bPlane").onclick = () => newMesh(createPlane(2));
+document.getElementById("bCyl").onclick = () => newMesh(createCylinder(24));
+document.getElementById("bMove").onclick = () => { if (mesh) { commit("translate", (m) => translate(m, 0.5, 0, 0)); log("translate +0.5 X"); } };
+document.getElementById("bRot").onclick = () => { if (mesh) { commit("rotate", (m) => rotateY(m, Math.PI / 12)); log("rotate Y 15°"); } };
+document.getElementById("bUndo").onclick = () => { log(undo.undo() ? "undo" : "nothing to undo"); };
+document.getElementById("bRedo").onclick = () => { log(undo.redo() ? "redo" : "nothing to redo"); };
+document.getElementById("bObj").onclick = () => {
+  if (!mesh) return;
+  const blob = new Blob([exportOBJ(mesh, mesh.name || "mesh")], { type: "text/plain" });
+  const a = document.createElement("a");
+  a.href = URL.createObjectURL(blob); a.download = (mesh.name || "mesh") + ".obj"; a.click();
+  setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+  log("OBJ download started");
+};
+document.getElementById("bTest").onclick = () => {
+  const out = [];
+  const t = (c, m2) => out.push((c ? "PASS  " : "FAIL  ") + m2);
+  const cube = createCube(2);
+  t(cube.triCount === 12, `cube 12 tris (got ${cube.triCount})`);
+  t(createUVSphere(16, 12).triCount > 0, "sphere triCount > 0");
+  const back = importOBJ(exportOBJ(cube, "Cube"));
+  t(back.vertCount === cube.vertCount, `OBJ round-trip vertCount ${back.vertCount}`);
+  t(back.triCount === 12, `OBJ round-trip 12 tris (got ${back.triCount})`);
+  const q = importOBJ("v 0 0 0\nv 1 0 0\nv 1 1 0\nv 0 1 0\nf 1 2 3 4\n");
+  t(q.triCount === 2, "n-gon fan -> 2 tris");
+  log(out.join("\n") + (out.some((l) => l.startsWith("FAIL")) ? "\nSELF-TEST FAILED" : "\nself-test OK"));
+};
+newMesh(createCube(2));
+(function frame() { spin += 0.004; draw(); requestAnimationFrame(frame); })();
+</script>
+</body>
+</html>

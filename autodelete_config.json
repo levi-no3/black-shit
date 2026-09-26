@@ -1,0 +1,378 @@
+{
+  "1549896904979120271": {
+    "1549896905415196837": 1.0
+  },
+  "1322250269396045854": {
+    "1322254011013005394": {
+      "minutes": 1.0,
+      "batch": 50,
+      "stop_at": null,
+      "mode": "smart",
+      "start_from": null
+    },
+    "1322250269396045858": {
+      "minutes": 1.0,
+      "batch": 50,
+      "stop_at": null,
+      "mode": "smart",
+      "start_from": null
+    },
+    "1322254067333988373": {
+      "minutes": 1.0,
+      "batch": 50,
+      "stop_at": null,
+      "mode": "smart",
+      "start_from": null
+    },
+    "1366680020596297729": {
+      "minutes": 1.0,
+      "batch": 50,
+      "stop_at": null,
+      "mode": "smart",
+      "start_from": null
+    },
+    "1366752179720945755": {
+      "minutes": 1.0,
+      "batch": 50,
+      "stop_at": null,
+      "mode": "smart",
+      "start_from": null
+    },
+    "1451641787834695952": {
+      "minutes": 1.0,
+      "batch": 50,
+      "stop_at": null,
+      "mode": "smart",
+      "start_from": null
+    },
+    "1451642235765391380": {
+      "minutes": 1.0,
+      "batch": 50,
+      "stop_at": null,
+      "mode": "smart",
+      "start_from": null
+    },
+    "1451808375686955120": {
+      "minutes": 1.0,
+      "batch": 50,
+      "stop_at": null,
+      "mode": "smart",
+      "start_from": null
+    },
+    "1451830436530491504": {
+      "minutes": 1.0,
+      "batch": 50,
+      "stop_at": null,
+      "mode": "smart",
+      "start_from": null
+    },
+    "1452678145348993064": {
+      "minutes": 1.0,
+      "batch": 50,
+      "stop_at": null,
+      "mode": "smart",
+      "start_from": null
+    },
+    "1455160181976465479": {
+      "minutes": 1.0,
+      "batch": 50,
+      "stop_at": null,
+      "mode": "smart",
+      "start_from": null
+    },
+    "1455922314188427378": {
+      "minutes": 1.0,
+      "batch": 50,
+      "stop_at": null,
+      "mode": "smart",
+      "start_from": null
+    },
+    "1457358101710635120": {
+      "minutes": 1.0,
+      "batch": 50,
+      "stop_at": null,
+      "mode": "smart",
+      "start_from": null
+    },
+    "1457368805415059627": {
+      "minutes": 1.0,
+      "batch": 50,
+      "stop_at": null,
+      "mode": "smart",
+      "start_from": null
+    },
+    "1460673659814416519": {
+      "minutes": 1.0,
+      "batch": 50,
+      "stop_at": null,
+      "mode": "smart",
+      "start_from": null
+    },
+    "1462063551362498664": {
+      "minutes": 1.0,
+      "batch": 50,
+      "stop_at": null,
+      "mode": "smart",
+      "start_from": null
+    },
+    "1462156158856069253": {
+      "minutes": 1.0,
+      "batch": 50,
+      "stop_at": null,
+      "mode": "smart",
+      "start_from": null
+    },
+    "1462166831128379453": {
+      "minutes": 1.0,
+      "batch": 50,
+      "stop_at": null,
+      "mode": "smart",
+      "start_from": null
+    },
+    "1462534496351031459": {
+      "minutes": 1.0,
+      "batch": 50,
+      "stop_at": null,
+      "mode": "smart",
+      "start_from": null
+    },
+    "1462535326181363794": {
+      "minutes": 1.0,
+      "batch": 50,
+      "stop_at": null,
+      "mode": "smart",
+      "start_from": null
+    },
+    "1466515151816491070": {
+      "minutes": 1.0,
+      "batch": 50,
+      "stop_at": null,
+      "mode": "smart",
+      "start_from": null
+    },
+    "1469768243106545695": {
+      "minutes": 1.0,
+      "batch": 50,
+      "stop_at": null,
+      "mode": "smart",
+      "start_from": null
+    },
+    "1469768582521946196": {
+      "minutes": 1.0,
+      "batch": 50,
+      "stop_at": null,
+      "mode": "smart",
+      "start_from": null
+    },
+    "1470858836104450180": {
+      "minutes": 1.0,
+      "batch": 50,
+      "stop_at": null,
+      "mode": "smart",
+      "start_from": null
+    },
+    "1472559025496264901": {
+      "minutes": 1.0,
+      "batch": 50,
+      "stop_at": null,
+      "mode": "smart",
+      "start_from": null
+    },
+    "1477710824893059264": {
+      "minutes": 1.0,
+      "batch": 50,
+      "stop_at": null,
+      "mode": "smart",
+      "start_from": null
+    },
+    "1479886191246573668": {
+      "minutes": 1.0,
+      "batch": 50,
+      "stop_at": null,
+      "mode": "smart",
+      "start_from": null
+    },
+    "1479890075763343401": {
+      "minutes": 1.0,
+      "batch": 50,
+      "stop_at": null,
+      "mode": "smart",
+      "start_from": null
+    },
+    "1479890190846656683": {
+      "minutes": 1.0,
+      "batch": 50,
+      "stop_at": null,
+      "mode": "smart",
+      "start_from": null
+    },
+    "1480216263698419785": {
+      "minutes": 1.0,
+      "batch": 50,
+      "stop_at": null,
+      "mode": "smart",
+      "start_from": null
+    },
+    "1485673576878178314": {
+      "minutes": 1.0,
+      "batch": 50,
+      "stop_at": null,
+      "mode": "smart",
+      "start_from": null
+    },
+    "1490960930727788684": {
+      "minutes": 1.0,
+      "batch": 50,
+      "stop_at": null,
+      "mode": "smart",
+      "start_from": null
+    },
+    "1491817617273524436": {
+      "minutes": 1.0,
+      "batch": 50,
+      "stop_at": null,
+      "mode": "smart",
+      "start_from": null
+    },
+    "1492430474457649324": {
+      "minutes": 1.0,
+      "batch": 50,
+      "stop_at": null,
+      "mode": "smart",
+      "start_from": null
+    },
+    "1492430537468543050": {
+      "minutes": 1.0,
+      "batch": 50,
+      "stop_at": null,
+      "mode": "smart",
+      "start_from": null
+    },
+    "1495354632946450593": {
+      "minutes": 1.0,
+      "batch": 50,
+      "stop_at": null,
+      "mode": "smart",
+      "start_from": null
+    },
+    "1497195473218568294": {
+      "minutes": 1.0,
+      "batch": 50,
+      "stop_at": null,
+      "mode": "smart",
+      "start_from": null
+    },
+    "1498720363356491787": {
+      "minutes": 1.0,
+      "batch": 50,
+      "stop_at": null,
+      "mode": "smart",
+      "start_from": null
+    },
+    "1499659780820701345": {
+      "minutes": 1.0,
+      "batch": 50,
+      "stop_at": null,
+      "mode": "smart",
+      "start_from": null
+    },
+    "1501673543111413831": {
+      "minutes": 1.0,
+      "batch": 50,
+      "stop_at": null,
+      "mode": "smart",
+      "start_from": null
+    },
+    "1502687601772068994": {
+      "minutes": 1.0,
+      "batch": 50,
+      "stop_at": null,
+      "mode": "smart",
+      "start_from": null
+    },
+    "1505197447100498051": {
+      "minutes": 1.0,
+      "batch": 50,
+      "stop_at": null,
+      "mode": "smart",
+      "start_from": null
+    },
+    "1505224370224627804": {
+      "minutes": 1.0,
+      "batch": 50,
+      "stop_at": null,
+      "mode": "smart",
+      "start_from": null
+    },
+    "1505300063553978490": {
+      "minutes": 1.0,
+      "batch": 50,
+      "stop_at": null,
+      "mode": "smart",
+      "start_from": null
+    },
+    "1505664179506511955": {
+      "minutes": 1.0,
+      "batch": 50,
+      "stop_at": null,
+      "mode": "smart",
+      "start_from": null
+    },
+    "1506967540323323934": {
+      "minutes": 1.0,
+      "batch": 50,
+      "stop_at": null,
+      "mode": "smart",
+      "start_from": null
+    },
+    "1510270442055667712": {
+      "minutes": 1.0,
+      "batch": 50,
+      "stop_at": null,
+      "mode": "smart",
+      "start_from": null
+    },
+    "1512903334871437352": {
+      "minutes": 1.0,
+      "batch": 50,
+      "stop_at": null,
+      "mode": "smart",
+      "start_from": null
+    },
+    "1520396128502419547": {
+      "minutes": 1.0,
+      "batch": 50,
+      "stop_at": null,
+      "mode": "smart",
+      "start_from": null
+    },
+    "1523416656309784616": {
+      "minutes": 1.0,
+      "batch": 50,
+      "stop_at": null,
+      "mode": "smart",
+      "start_from": null
+    },
+    "1534455229435609188": {
+      "minutes": 1.0,
+      "batch": 50,
+      "stop_at": null,
+      "mode": "smart",
+      "start_from": null
+    },
+    "1322254810702938132": {
+      "minutes": 1.0,
+      "batch": 50,
+      "stop_at": null,
+      "mode": "smart",
+      "start_from": null
+    },
+    "1540791813219287161": {
+      "minutes": 1.0,
+      "batch": 50,
+      "stop_at": null,
+      "mode": "smart",
+      "start_from": null
+    }
+  }
+}

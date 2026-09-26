@@ -1,0 +1,8 @@
+{
+  "1322250269396045854": {
+    "threshold": 0.63,
+    "strikes_to_act": 3,
+    "enabled": true,
+    "live_slur_delete": false
+  }
+}

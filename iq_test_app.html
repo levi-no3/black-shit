@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CORE IQ Battery — 14 Subtests x 30 (WAIS-Inspired)</title>
+<style>
+:root{--bg:#0f1420;--card:#1a2236;--accent:#5b8cff;--accent2:#8b5cf6;--good:#22c55e;--warn:#f59e0b;--bad:#ef4444;--text:#eef2ff;--muted:#9aa7c7;--C:#38bdf8;--O:#a78bfa;--R:#34d399;--E:#fbbf24}
+*{box-sizing:border-box}body{margin:0;font-family:'Segoe UI',system-ui,-apple-system,Roboto,Arial,sans-serif;background:radial-gradient(1200px 600px at 20% -10%,#24365e 0%,var(--bg) 60%),var(--bg);color:var(--text);min-height:100vh}
+.wrap{max-width:960px;margin:0 auto;padding:24px 16px 60px}
+header{display:flex;align-items:center;gap:14px;margin-bottom:18px}
+.logo{width:52px;height:52px;border-radius:16px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:grid;place-items:center;font-weight:900;font-size:20px}
+h1{margin:0;font-size:22px}.sub{color:var(--muted);font-size:12px;margin-top:4px}
+.card{background:linear-gradient(180deg,var(--card),#151d32);border:1px solid #2c3a5e;border-radius:18px;padding:22px;box-shadow:0 12px 40px rgba(0,0,0,.35)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px}@media(max-width:640px){.grid2{grid-template-columns:1fr}}
+.subgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}@media(max-width:700px){.subgrid{grid-template-columns:1fr}}
+.st{border-radius:14px;padding:12px;border:1px solid #2c3a5e;background:#141c32;font-size:13px}
+.st h4{margin:0 0 4px;font-size:13px}.st p{margin:0;color:var(--muted);font-size:12px;line-height:1.5}
+.badge{display:inline-block;font-size:10px;font-weight:800;letter-spacing:.08em;padding:3px 9px;border-radius:999px;margin-bottom:6px}
+.bC{background:rgba(56,189,248,.15);color:var(--C);border:1px solid rgba(56,189,248,.4)}
+.bO{background:rgba(167,139,250,.15);color:var(--O);border:1px solid rgba(167,139,250,.4)}
+.bR{background:rgba(52,211,153,.15);color:var(--R);border:1px solid rgba(52,211,153,.4)}
+.bE{background:rgba(251,191,36,.15);color:var(--E);border:1px solid rgba(251,191,36,.4)}
+label{font-size:13px;color:var(--muted);display:block;margin:10px 0 6px}
+input[type=text],input[type=number],select{width:100%;padding:11px;border-radius:12px;border:1px solid #33416a;background:#0f1830;color:var(--text);font-size:14px}
+.btn{cursor:pointer;border:0;border-radius:14px;padding:14px 20px;font-size:15px;font-weight:800;color:white;background:linear-gradient(135deg,var(--accent),var(--accent2));box-shadow:0 8px 24px rgba(91,140,255,.35);transition:.15s;width:100%;margin-top:14px}
+.btn:hover{transform:translateY(-1px);filter:brightness(1.08)}.btn:disabled{opacity:.5;cursor:not-allowed;transform:none}
+.btn-ghost{background:#1e2a4a;box-shadow:none;border:1px solid #33416a;font-size:13px;padding:10px}
+.small{font-size:12px;color:var(--muted);line-height:1.6}
+.progress-outer{height:10px;background:#0f1830;border-radius:999px;overflow:hidden;margin:10px 0;border:1px solid #2a3a65}
+#progressBar{height:100%;width:0%;background:linear-gradient(90deg,var(--accent),var(--accent2));transition:width .3s}
+#progressBar2{height:100%;width:0%;background:linear-gradient(90deg,#34d399,#38bdf8);transition:width .3s}
+.toprow{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.pill{font-size:12px;padding:6px 12px;border-radius:999px;background:#0f1830;border:1px solid #33416a;color:var(--muted)}.pill b{color:var(--text)}
+#timerWrap{height:8px;background:#0f1830;border-radius:999px;overflow:hidden;margin-top:10px;border:1px solid #2a3a65}
+#timerBar{height:100%;width:100%;background:var(--good)}
+#qPrompt{font-size:18px;line-height:1.5;margin:12px 0 6px;font-weight:650}
+#qMeta{font-size:12px;color:var(--muted)}
+#memorizeBox{display:none;background:#0b1226;border:2px dashed var(--warn);border-radius:14px;padding:18px;text-align:center;margin:12px 0}
+#memorizeBox .stim{font-size:30px;font-weight:900;letter-spacing:.2em;margin:10px 0;word-break:break-all}
+.opts{display:grid;gap:10px;margin-top:14px}
+.opt{text-align:left;background:#0f1830;border:2px solid #2c3a5e;border-radius:14px;padding:13px;color:var(--text);font-size:14px;cursor:pointer;transition:.12s}
+.opt:hover{border-color:var(--accent);background:#162044}.opt.selected{border-color:var(--accent);background:#1b2a5a}
+.nav{display:flex;gap:10px;margin-top:14px}.nav button{flex:1}
+table{width:100%;border-collapse:collapse;margin-top:12px;font-size:12px}
+th,td{padding:8px;border-bottom:1px solid #2a3a65;text-align:left}th{color:var(--muted);font-size:11px;text-transform:uppercase;letter-spacing:.05em}
+.tag{padding:4px 10px;border-radius:999px;font-size:12px;font-weight:800}
+.review-item{border:1px solid #2a3a65;border-radius:12px;padding:10px;margin-top:8px;font-size:12px;background:#0f1830}
+.hidden{display:none!important}
+.bars{display:grid;gap:8px;margin-top:12px}
+.bar-row{display:grid;grid-template-columns:150px 1fr 50px;gap:10px;align-items:center;font-size:12px}
+.bar-outer{height:12px;background:#0f1830;border-radius:999px;overflow:hidden;border:1px solid #2a3a65}
+.bar-fill{height:100%;border-radius:999px;width:0%;transition:width .8s}
+details summary{cursor:pointer}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header><div class="logo">IQ</div><div><h1>CORE Battery <span style="font-weight:400;color:var(--muted);font-size:13px">14 subtests x 30 &middot; WAIS-inspired &middot; 420 items</span></h1><div class="sub">C Crystallized (4) &middot; O Operational (4) &middot; R Recall (3) &middot; E Execution speed (3) &nbsp;|&nbsp; FSIQ &mu;=100 &sigma;=15</div></div></header>
+
+<div id="screen-home" class="card">
+<h2 style="margin:0 0 6px">Full cognitive battery</h2>
+<p class="small" style="font-size:13px;color:#cbd5f5">14 subtests modelled on <b>WAIS-IV</b> (VCI / PRI / WMI / PSI), grouped into <b>CORE</b>. Verbal items are hand-written originals; quantitative / memory / speed items are generated from templates so every run has fresh numbers. Educational screening only &mdash; not a clinical WAIS.</p>
+<div class="subgrid" id="subList"></div>
+<div class="grid2" style="margin-top:12px">
+<div><label>Name (local only)</label><input type="text" id="userName" placeholder="e.g. Alex"></div>
+<div><label>Age</label><input type="number" id="userAge" min="6" max="99" value="25"></div>
+</div>
+<label>Mode</label>
+<select id="mode">
+<option value="full">Full battery — 14 x 30 = 420 Q (~90 min, with breaks)</option>
+<option value="quick">Quick screen — 14 x 10 = 140 Q (~30 min)</option>
+<option value="single">Single subtest — 30 Q practice</option>
+</select>
+<div id="singlePickWrap" class="hidden"><label>Pick subtest</label><select id="singlePick"></select></div>
+<label style="margin-top:10px"><input type="checkbox" id="consent" checked style="width:auto"> I understand this is educational, not a diagnosis.</label>
+<button class="btn" id="btnStart">Start &rarr;</button>
+<p class="small">Scoring (WAIS-like): raw /30 per subtest &rarr; scaled 1&ndash;19 (M=10, SD=3; norm raw mean 18, SD 5) &rarr; domain Index M=100 SD=15 via <span style="color:#fff">Index = 100 + 5&times;(avgScaled&minus;10)</span> &rarr; <b>FSIQ = mean of 4 indexes</b>. Bands: 130+ Very Superior, 120&ndash;129 Superior, 110&ndash;119 High Average, 90&ndash;109 Average, 80&ndash;89 Low Average, 70&ndash;79 Borderline, &lt;70 Extremely Low. Speed subtests timed 15&ndash;20s; timeout = wrong. <kbd>1</kbd>&ndash;<kbd>4</kbd> answer, arrows navigate.</p>
+<div id="historyBox" class="small"></div>
+</div>
+
+<div id="screen-test" class="card hidden">
+<div class="toprow"><span class="pill" id="qCounter"><b>–</b></span><span class="pill" id="qDomain">–</span><span class="pill">⏱ <b id="qTimerText">–</b></span></div>
+<div class="small" id="overallLine" style="margin-top:6px"></div>
+<div class="progress-outer"><div id="progressBar"></div></div>
+<div class="progress-outer" style="height:6px"><div id="progressBar2"></div></div>
+<div id="timerWrap" class="hidden"><div id="timerBar"></div></div>
+<div id="qMeta"></div><div id="qPrompt"></div>
+<div id="memorizeBox"><div class="small">MEMORIZE &mdash; hides in <b id="memCount">5</b>s. Do not write it down.</div><div class="stim" id="memStim"></div></div>
+<div class="opts" id="qOpts"></div>
+<div class="nav"><button class="btn btn-ghost" id="btnPrev">&larr; Prev</button><button class="btn btn-ghost" id="btnNext">Next &rarr;</button></div>
+<p class="small" id="lockMsg" style="text-align:center"></p>
+</div>
+
+<div id="screen-break" class="card hidden">
+<h2 id="breakTitle">Subtest complete</h2>
+<p class="small" id="breakText"></p>
+<button class="btn" id="btnContinue">Continue &rarr;</button>
+</div>
+
+<div id="screen-results" class="card hidden">
+<h2 style="margin:0">Results — <span id="resName"></span></h2>
+<p class="small" id="resMeta"></p>
+<div class="grid2">
+<div class="st" style="text-align:center"><div class="small">FULL SCALE IQ</div><div id="fsiqNum" style="font-size:54px;font-weight:900">–</div><div id="fsiqClass" class="tag">–</div><div class="small" id="resPct" style="margin-top:6px"></div><div class="small" id="resCI"></div></div>
+<div class="st"><b>Domain indexes (M=100, SD=15)</b><div class="bars" id="indexBars"></div><p class="small" id="resInterpret"></p></div>
+</div>
+<h3>14 subtests — raw /30 &rarr; scaled 1&ndash;19</h3>
+<table><thead><tr><th>Subtest (WAIS link)</th><th>Raw</th><th>Scaled</th><th>Band*</th></tr></thead><tbody id="scoreTable"></tbody></table>
+<p class="small">*Band per subtest from scaled: 13+ Superior, 11&ndash;12 High Avg, 8&ndash;10 Average, 6&ndash;7 Low Avg, &le;5 Borderline/low.</p>
+<h3>Strengths &amp; gaps</h3>
+<p class="small" id="resStrengths" style="color:#cbd5f5;font-size:13px"></p>
+<div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:10px">
+<button class="btn btn-ghost" id="btnDownload" style="flex:1">⬇ Report (.txt)</button>
+<button class="btn btn-ghost" id="btnJSON" style="flex:1">⬇ Data (.json)</button>
+<button class="btn btn-ghost" id="btnRetake" style="flex:1">↻ Home</button>
+</div>
+<h3>Item review</h3>
+<div id="review"></div>
+<p class="small">⚠ Educational screening with original / generated items; not normed, not clinical. For real assessment see a licensed psychologist.</p>
+</div>
+</div>
+
+<script>
+"use strict";
+/* ================= RNG ================= */
+function mulberry32(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+let rng=mulberry32((Date.now()%2147483647)||12345);
+function ri(a,b){return a+Math.floor(rng()*(b-a+1));}
+function pick(arr){return arr[Math.floor(rng()*arr.length)];}
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(rng()*(i+1));const t=a[i];a[i]=a[j];a[j]=t;}return a;}
+function mkOpts(correct,foils){const opts=shuffle([correct].concat(foils));return{opts:opts,a:opts.indexOf(correct)};}
+const L3=["A","B","C","D","E","F","G","H","J","K","L","M","N","P","R","S","T","W","Z"];
+
+/* ================= VERBAL BANKS (30 each) ================= */
+const VOCAB=[["candid","frank and honest","dishonest","timid","vague"],["ephemeral","lasting a very short time","eternal","transparent","heavy"],["mitigate","to make less severe","to worsen","to ignore","to delay"],["ubiquitous","present everywhere","rare","hidden","temporary"],["pragmatic","practical and realistic","idealistic","careless","rigid"],["ambiguous","open to more than one interpretation","perfectly clear","very brief","very loud"],["resilient","able to recover quickly","fragile","stubborn","idle"],["meticulous","showing great care for detail","careless","hasty","vague"],["apathy","lack of interest","strong passion","anger","fear"],["benevolent","kind and generous","cruel","selfish","indifferent"],["superfluous","unnecessary","essential","scarce","fragile"],["intricate","complex and detailed","simple","plain","empty"],["audacious","bold and daring","timid","polite","quiet"],["tranquil","calm and peaceful","noisy","crowded","bright"],["obsolete","no longer used","brand-new","popular","useful"],["profound","deep and meaningful","shallow","brief","loud"],["frugal","thrifty and economical","wasteful","extravagant","careless"],["adamant","firmly fixed in purpose","flexible","uncertain","gentle"],["obscure","unclear or little-known","famous","obvious","bright"],["lucid","clear and easy to understand","confusing","dark","vague"],["novice","a beginner","an expert","a leader","a critic"],["versatile","able to do many things","very limited","rigid","weak"],["vivid","bright and striking","dull","pale","vague"],["zenith","the highest point","the lowest point","the exact middle","the very start"],["aloof","distant and reserved","friendly","warm","close"],["coherent","logical and consistent","confused","broken","silent"],["diligent","hardworking and careful","lazy","careless","hasty"],["hostile","unfriendly and opposed","welcoming","kind","neutral"],["wane","to decrease gradually","to grow rapidly","to shine brightly","to begin"],["transparent","clear and open","opaque","hidden","cloudy"]];
+const SIM=[["Apple","Banana","Both are fruits","Both are vegetables","Both are red","Both grow underground"],["Dog","Cat","Both are domestic mammals","Both are reptiles","Both can fly","Both live only in water"],["Piano","Guitar","Both are musical instruments","Both are sports","Both are foods","Both are vehicles"],["River","Lake","Both are bodies of fresh water","Both are mountains","Both are deserts","Both are man-made only"],["Book","Newspaper","Both are reading materials","Both are foods","Both are hand tools","Both are animals"],["Hammer","Saw","Both are carpentry tools","Both are kitchen appliances","Both are instruments","Both are items of clothing"],["Circle","Square","Both are flat 2-D shapes","Both are 3-D solids","Both have three sides","Both are colours"],["Democracy","Monarchy","Both are systems of government","Both are religions","Both are sports","Both are foods"],["Fear","Anger","Both are emotions","Both are colours","Both are foods","Both are tools"],["Winter","Summer","Both are seasons","Both are days of the week","Both are planets","Both are oceans"],["Eye","Ear","Both are sense organs","Both are bones","Both are muscles","Both are blood cells"],["Knife","Scissors","Both are cutting tools","Both are writing tools","Both are measuring tools","Both are musical instruments"],["Train","Bus","Both are modes of public transport","Both are wild animals","Both are foods","Both are planets"],["Doctor","Nurse","Both are healthcare roles","Both are construction roles","Both are sports teams","Both are insects"],["Poem","Novel","Both are literary works","Both are scientific tools","Both are vehicles","Both are buildings"],["Diamond","Ruby","Both are gemstones","Both are metals used for wires","Both are fuels","Both are fabrics"],["Thunder","Lightning","Both occur in storms","Both occur only in deserts","Both are ocean currents","Both are kinds of rock"],["Map","Globe","Both represent the Earth","Both are musical instruments","Both are foods","Both are animals"],["Courage","Kindness","Both are positive character traits","Both are colours","Both are foods","Both are tools"],["Bread","Rice","Both are staple carbohydrate foods","Both are meats","Both are drinks","Both are spices only"],["Spanish","French","Both are Romance languages","Both are Asian cuisines","Both are planets","Both are metals"],["Ant","Bee","Both are insects","Both are mammals","Both are birds","Both are fish"],["Oak","Pine","Both are trees","Both are flowers only","Both are grasses","Both are fungi"],["Swimming","Running","Both are forms of exercise","Both are languages","Both are foods","Both are planets"],["Gold","Silver","Both are precious metals","Both are gases","Both are fabrics","Both are liquids at room temp"],["Chair","Table","Both are items of furniture","Both are vehicles","Both are foods","Both are animals"],["Sun","Moon","Both are celestial bodies","Both are continents","Both are oceans","Both are man-made satellites only"],["Phone call","Letter","Both are means of communication","Both are foods","Both are sports","Both are tools for cutting"],["Painting","Statue","Both are works of art","Both are scientific theories","Both are vehicles","Both are foods"],["Copper","Iron","Both are metals","Both are gases","Both are gemstones","Both are fabrics"]];
+const INFO=[["Who wrote 'Romeo and Juliet'?","William Shakespeare","Charles Dickens","Mark Twain","Jane Austen"],["What is the capital of Australia?","Canberra","Sydney","Melbourne","Perth"],["Which planet is largest in our solar system?","Jupiter","Mars","Earth","Venus"],["What is H2O commonly known as?","Water","Salt","Oxygen","Sugar"],["How many days are in a leap year?","366","365","364","367"],["The Sahara is located on which continent?","Africa","Asia","Australia","South America"],["Who painted the Mona Lisa?","Leonardo da Vinci","Pablo Picasso","Vincent van Gogh","Michelangelo"],["What is the currency of Japan?","Yen","Won","Dollar","Euro"],["At sea level water boils at?","100°C","90°C","80°C","120°C"],["How many legs does a spider have?","8","6","10","4"],["What is the capital of Canada?","Ottawa","Toronto","Vancouver","Montreal"],["Which ocean is the largest?","Pacific","Atlantic","Indian","Arctic"],["How many colours are in a rainbow?","7","6","8","5"],["Which gas do plants absorb?","Carbon dioxide","Oxygen","Nitrogen","Helium"],["Water freezes at?","0°C","10°C","-10°C","32°F only (trick: same as 0°C, but pick 0°C)"],["Who wrote the Harry Potter books?","J.K. Rowling","J.R.R. Tolkien","Roald Dahl","Stephen King"],["How many minutes are in an hour?","60","100","90","50"],["Which planet is called the Red Planet?","Mars","Venus","Jupiter","Mercury"],["What is the capital of France?","Paris","Lyon","Marseille","Nice"],["How many sides does a hexagon have?","6","5","7","8"],["What force pulls objects toward Earth?","Gravity","Magnetism","Friction","Inertia alone"],["How many states are in the USA?","50","52","48","51"],["What is the capital of Italy?","Rome","Milan","Naples","Venice"],["How many players (per side) in a soccer match?","11","10","9","12"],["In which year did World War II end?","1945","1939","1918","1950"],["What is the largest mammal on Earth?","Blue whale","Elephant","Giraffe","Hippo"],["What is the capital of Egypt?","Cairo","Alexandria","Giza","Luxor"],["How many days are in a week?","7","5","6","8"],["How many continents are there?","7","5","6","8"],["What is the capital of Germany?","Berlin","Munich","Hamburg","Frankfurt"]];
+const COMP=[["Why do we have leap years?","To keep the calendar aligned with Earth's orbit","To add extra holidays","To track the Moon only","Pure tradition"],["If someone says 'let's break the ice', they mean","Start a friendly conversation","Literally break ice","End a friendship","Cause a problem"],["Why should you wash your hands before eating?","To remove germs and prevent illness","To warm them up only","To make food taste better","There is no reason"],["What should you do if a fire alarm rings at school?","Leave calmly by the exit and gather outside","Hide under a desk","Ignore it","Run back for belongings"],["Why do people pay taxes?","To fund public services like roads and schools","To make politicians rich","For no reason","Only as punishment"],["Why do we have traffic lights?","To control traffic and prevent crashes","To decorate streets","To slow everyone down needlessly","Only for pedestrians"],["'Actions speak louder than words' means","What you do matters more than what you say","Shouting is best","Words are useless","Always be loud"],["Why is it wise to save money?","To be prepared for future needs","To become greedy","Saving is pointless","Only to buy luxuries"],["'To bend over backwards' means","To try very hard to help","To do gymnastics","To give up","To lie down"],["Why wear a seatbelt?","It greatly reduces injury in a crash","It is just uncomfortable decoration","Only the law with no benefit","To drive faster"],["Why recycle?","To reduce waste and protect resources","It has no effect","To make more rubbish","Only to earn praise"],["If a stranger offers you a ride, you should","Refuse and tell a trusted adult","Accept immediately","Get in quietly","Follow them"],["Why study history?","To learn from past mistakes and successes","The past is irrelevant","Only to memorise dates","To predict the future exactly"],["'Don't cry over spilt milk' means","Don't waste sorrow on what can't be undone","Never drink milk","Always cry","Milk is precious"],["Why brush your teeth daily?","To prevent cavities and gum disease","Only to look white briefly","Brushing harms teeth","No reason"],["Why do countries use passports?","To verify identity and control borders","To collect stamps only","To make travel harder","They serve no purpose"],["Why exercise regularly?","It keeps body and mind healthy","Exercise is harmful","Only athletes need it","To waste time"],["'Better safe than sorry' means","Take care now to avoid regret later","Never take any precaution","Worry is useless","Risk everything"],["Why apologise when wrong?","To repair trust and show respect","Apologies show weakness","Never apologise","Only if forced"],["Why keep promises?","It builds trust and reliability","Promises don't matter","Only keep easy ones","To impress once"],["Why should you never share passwords?","Others could misuse your accounts","Sharing is always safe","Passwords don't matter","Only share with strangers"],["'A stitch in time saves nine' means","Fixing a small problem early prevents a big one","Sewing is outdated","Always delay repairs","Nine is unlucky"],["Why look both ways before crossing?","To check for oncoming traffic","It is just a game","Roads are always empty","Only children need to"],["Why eat vegetables?","They provide vitamins and fibre","Vegetables are all harmful","Only for taste","They replace all exercise"],["Why do we need sleep?","It restores body and brain","Sleep is wasted time","Only babies need it","To dream only"],["'Honesty is the best policy' means","Truthfulness works best long-term","Always lie cleverly","Hide everything","Honesty never matters"],["Why follow a recipe when baking?","Correct ratios make it work","Recipes don't matter","Only for decoration","To slow cooking"],["Why arrive early for an interview?","It shows respect and avoids stress","Lateness impresses","Time doesn't matter","To wait longer pointlessly"],["Why listen before replying?","To understand and respond well","Listening wastes time","Always interrupt","Only the loudest matters"],["Why lock your door at night?","To deter intruders and stay safe","Locks do nothing","Only to annoy family","Open doors are safer"]];
+// fix INFO Q15 distractors (remove confusing trick)
+INFO[14]=["Water freezes at?","0°C","10°C","100°C","-10°C"];
+
+/* ================= PROCEDURAL GENERATORS ================= */
+function genNumberSeries(n){
+  const items=[];
+  for(let i=0;i<n;i++){
+    const t=i%6;let seq,ans,exp;
+    if(t===0){const s=ri(2,20),d=ri(2,9);seq=[s,s+d,s+2*d,s+3*d];ans=s+4*d;exp="Arithmetic progression +"+d+".";
+      const o=mkOpts(ans,[ans+1,ans-1,ans+d]);items.push({q:seq.join(", ")+", … what comes next?",opts:o.opts,a:o.a,exp:exp});}
+    else if(t===1){const s=ri(2,5),r=ri(2,3);seq=[s,s*r,s*r*r,s*r*r*r];ans=s*r*r*r*r;exp="Geometric ×"+r+".";
+      const o=mkOpts(ans,[ans+s,Math.max(1,ans-2),ans+r]);items.push({q:seq.join(", ")+", …?",opts:o.opts,a:o.a,exp:exp});}
+    else if(t===2){const s=ri(2,9);seq=[s*s,(s+1)*(s+1),(s+2)*(s+2),(s+3)*(s+3)];ans=(s+4)*(s+4);exp="Consecutive squares.";
+      const o=mkOpts(ans,[ans+1,ans-1,ans+s]);items.push({q:seq.join(", ")+", …?",opts:o.opts,a:o.a,exp:exp});}
+    else if(t===3){let a=ri(1,8),b=ri(2,9);seq=[a,b];for(let k=0;k<3;k++){const c=a+b;seq.push(c);a=b;b=c;}ans=a+b;exp="Each term = sum of previous two.";
+      const o=mkOpts(ans,[ans+1,ans-1,ans+2]);items.push({q:seq.slice(0,5).join(", ")+", …?",opts:o.opts,a:o.a,exp:exp});}
+    else if(t===4){const a0=ri(1,10),da=ri(1,5),b0=ri(20,40),db=ri(1,5);seq=[a0,b0,a0+da,b0-db,a0+2*da];ans=b0-2*db;exp="Two interleaved series.";
+      const o=mkOpts(ans,[ans+1,ans-1,ans+db]);items.push({q:seq.join(", ")+", …?",opts:o.opts,a:o.a,exp:exp});}
+    else{const st=ri(0,20);const step=ri(2,4);const L="ABCDEFGHIJKLMNOPQRSTUVWXYZ";let s="";const arr=[];for(let k=0;k<5;k++){arr.push(L[(st+k*step)%26]);}ans=L[(st+5*step)%26];exp="Letters advance +"+step+".";
+      const wrong=[L[(st+5*step+1)%26],L[(st+5*step+2)%26],L[(st+5*step+25)%26]];
+      const o=mkOpts(ans,wrong);items.push({q:arr.join(", ")+", …?",opts:o.opts,a:o.a,exp:exp});}
+  }
+  return items;
+}
+function genFigureWeights(n){
+  const items=[];const SH=["●","▲","■","◆","★"];
+  for(let i=0;i<n;i++){
+    const t=i%3;
+    if(t===0){const v1=ri(2,9),v2=ri(2,9),v3=ri(2,9);const ans=v1+v2+v3;
+      const o=mkOpts(ans,[ans+1,ans-1,ans+2]);
+      items.push({q:"If "+SH[0]+"="+v1+", "+SH[1]+"="+v2+", "+SH[2]+"="+v3+", what is "+SH[0]+"+"+SH[1]+"+"+SH[2]+"?",opts:o.opts,a:o.a,exp:v1+"+"+v2+"+"+v3+"="+ans+"."});}
+    else if(t===1){const x=ri(2,9);const tot=2*x;const y=ri(2,12);const ans=y-x;
+      const o=mkOpts(ans,[ans+1,Math.max(0,ans-1),ans+2]);
+      items.push({q:"A balance: 2 "+SH[3]+"s weigh "+tot+". "+SH[3]+" + "+SH[4]+" weigh "+y+". What does "+SH[4]+" weigh?",opts:o.opts,a:o.a,exp:SH[3]+"="+x+", so "+SH[4]+"=" +y+"−"+x+"="+ans+"."});}
+    else{const a=ri(2,6),b=ri(2,6),c=ri(2,9);const ans=a*3+b*2+c;
+      const o=mkOpts(ans,[ans+1,ans-1,ans+a]);
+      items.push({q:"3 "+SH[0]+"s (= "+a+" each) + 2 "+SH[1]+"s (= "+b+" each) + one "+SH[2]+" (= "+c+"). Total?",opts:o.opts,a:o.a,exp:(3*a)+"+"+(2*b)+"+"+c+"="+ans+"."});}
+  }
+  return items;
+}
+function genVisual(n){
+  const items=[];
+  for(let i=0;i<n;i++){
+    const t=i%5;
+    if(t===0){ // odd one out 2D vs 3D
+      const sets=[["Square","Circle","Triangle","Cube","Cube is 3-D; the rest are flat 2-D shapes."],["Penny","Nickel","Dime","Ruler","Ruler is not a coin."],["Oak","Pine","Rose","Birch","Rose is a flower/shrub; the rest are trees."],["Dog","Cat","Horse","Eagle","Eagle is a bird; the rest are mammals."],["Red","Blue","Green","Heavy","Heavy is not a colour."]];
+      const s=sets[i%sets.length];const all=shuffle([s[0],s[1],s[2],s[3]]);const ans=s[3];
+      const o=mkOpts(ans,all.filter(x=>x!==ans));items.push({q:"Which is the odd one out?",opts:o.opts,a:o.a,exp:s[4]});}
+    else if(t===1){ // symbol string different
+      const ch="abcdefghjkmnpqrstuvwxyz";const c1=ch[ri(0,ch.length-1)];let c2=c1;while(c2===c1)c2=ch[ri(0,ch.length-1)];
+      const base=c1.repeat(5);const pos=ri(0,3);const arr=[base,base,base,base];arr[pos]=c1.repeat(2)+c2+c1.repeat(2);
+      const labels=["1st","2nd","3rd","4th"];const ans=labels[pos];const o=mkOpts(ans,labels.filter(x=>x!==ans));
+      items.push({q:"Which string is different? "+arr.join(" · "),opts:o.opts,a:o.a,exp:"The "+ans+" contains '"+c2+"'."});}
+    else if(t===2){ // alternating shape next
+      const p=["▲ ●","● ■","◆ ▲","★ ●","■ ◆"];const pat=p[ri(0,p.length-1)].split(" ");const len=ri(2,4);let s=[];for(let k=0;k<5;k++)s.push(pat[k%2]);
+      const ans=pat[5%2];const pool=["▲","●","■","◆","★"];const foils=shuffle(pool.filter(x=>x!==ans)).slice(0,3);
+      const o=mkOpts(ans,foils);items.push({q:s.join(" ")+" … what comes next?",opts:o.opts,a:o.a,exp:"Alternating pattern."});}
+    else if(t===3){ // rotation
+      const dirs=["↑","→","↓","←"];const st=ri(0,3);const turns=ri(1,3);const ans=dirs[(st+turns)%4];
+      const foils=shuffle(dirs.filter(x=>x!==ans)).slice(0,3);const o=mkOpts(ans,foils);
+      items.push({q:"An arrow points "+dirs[st]+". Rotate it "+(turns*90)+"° clockwise. Now it points…?",opts:o.opts,a:o.a,exp:"Each 90° step moves one position."});}
+    else{ // counting shapes
+      const sym=pick(["●","▲","■"]);const other=sym==="●"?"▲":"●";const len=ri(6,9);let s=[];let c=0;for(let k=0;k<len;k++){if(rng()<0.5){s.push(sym);c++;}else s.push(other);}
+      const o=mkOpts(c,[Math.max(0,c-1),c+1,c+2]);items.push({q:"How many "+sym+" in: "+s.join("")+" ?",opts:o.opts,a:o.a,exp:"Count carefully: "+c+"."});}
+  }
+  return items;
+}
+function genLogic(n){
+  const items=[];const A=["Bloops","Zargs","Mips","Wugs"],B=["Razzies","Daxes","Flurps","Tibs"],C2=["Lazzies","Norgs","Kelems"," fictional Vons".trim()];
+  for(let i=0;i<n;i++){
+    const t=i%4;const a=pick(A),b=pick(B),c=pick(C2);
+    if(t===0){const o={opts:["Yes","No","Cannot tell","Sometimes"],a:0};items.push({q:"All "+a+" are "+b+". All "+b+" are "+c+". Are all "+a+" "+c+"?",opts:o.opts,a:o.a,exp:"Transitive: "+a+"⊆"+b+"⊆"+c+"."});}
+    else if(t===1){const x=pick(["taller","faster","older"]),y=x==="taller"?"shorter":x==="faster"?"slower":"younger";
+      const P=["Ann","Ben","Cat","Dan","Eli"],p1=P[ri(0,4)];let p2=P[ri(0,4)];while(p2===p1)p2=P[ri(0,4)];let p3=P[ri(0,4)];while(p3===p1||p3===p2)p3=P[ri(0,4)];
+      const o=mkOpts(p3,[p1,p2,"Cannot tell"]);items.push({q:p1+" is "+x+" than "+p2+". "+p2+" is "+x+" than "+p3+". Who is most "+y+"?",opts:o.opts,a:o.a,exp:"Order: "+p1+" > "+p2+" > "+p3+"."});}
+    else if(t===2){const n1=ri(2,9);const o=mkOpts(n1*2,[n1*2+1,n1*2-1,n1*2+2]);items.push({q:"If a machine doubles its input, and the output is "+(n1*2)+", what was the input?",opts:o.opts,a:o.a,exp:"Half of "+(n1*2)+" is "+n1+"."});}
+    else{const o={opts:["True","False","Cannot tell","Sometimes"],a:0};const s=pick(["If it rains, the ground gets wet. It rained.","All cats have tails. Felix is a cat.","No fish can fly. Nemo is a fish."]);items.push({q:s+" Conclusion follows. True or false?",opts:o.opts,a:o.a,exp:"Valid deduction."});}
+  }
+  return items;
+}
+function genDigitSpan(n){
+  const lens=[3,3,3,3,4,4,4,4,4,5,5,5,5,5,6,6,6,6,6,7,7,7,7,8,8,8,8,9,9,9];
+  const items=[];
+  for(let i=0;i<n;i++){
+    const L=lens[i%lens.length];let d="";for(let k=0;k<L;k++)d+=ri(0,9).toString();
+    const spaced=d.split("").join(" – ");
+    if(i%2===0){ // forward: ask nth
+      const pos=ri(1,L);const ans=d[pos-1];
+      const pool=["0","1","2","3","4","5","6","7","8","9"].filter(x=>x!==ans);const foils=shuffle(pool).slice(0,3);
+      const o=mkOpts(ans,foils);
+      const ord={1:"1st",2:"2nd",3:"3rd"};const ol=ord[pos]||(pos+"th");
+      items.push({mem:spaced,q:"What was the "+ol+" digit?",opts:o.opts,a:o.a,exp:"Sequence was "+spaced+".",memTime:Math.min(9,2+L)});}
+    else{ // backward: pick reversed
+      const rev=d.split("").reverse().join("");const revSp=rev.split("").join("-");
+      const f1=d.split("").join("-");let arr=d.split("");const t2=arr[0];arr[0]=arr[arr.length-1];arr[arr.length-1]=t2;const f2=arr.join("-");
+      const f3=rev.slice(1)+rev[0];
+      const cand=[revSp,f1,f2,f3].filter((v,ix,ar)=>ar.indexOf(v)===ix);
+      while(cand.length<4)cand.push(revSp+"*");
+      const set=cand.slice(0,4);const o=mkOpts(revSp,set.filter(x=>x!==revSp));
+      items.push({mem:spaced,q:"Select the sequence in REVERSE order:",opts:o.opts,a:o.a,exp:"Reverse of "+spaced+" is "+revSp+".",memTime:Math.min(9,2+L)});}
+  }
+  return items;
+}
+function genArithmetic(n){
+  const items=[];
+  for(let i=0;i<n;i++){
+    if(i<10){const a=ri(6,49),b=ri(6,49);const ans=a+b;const o=mkOpts(ans,[ans+1,ans-1,ans+10]);
+      items.push({q:a+" + "+b+" = ?",opts:o.opts,a:o.a,exp:a+"+"+b+"="+ans+"."});}
+    else if(i<20){const kind=i%3;
+      if(kind===0){const a=ri(6,12),b=ri(4,9);const ans=a*b;const o=mkOpts(ans,[ans+a,ans-1,ans+1]);items.push({q:a+" × "+b+" = ?",opts:o.opts,a:o.a,exp:ans+"."});}
+      else if(kind===1){const p=ri(5,25);const ans=p*4;const o=mkOpts(ans,[ans+5,ans-5,ans+10]);items.push({q:p+"% of 400 = ?",opts:o.opts,a:o.a,exp:p+"% × 400 = "+ans+"."});}
+      else{const t=ri(3,12),d=ri(2,9);const ans=t*d;const o=mkOpts(ans,[ans+1,ans-1,ans+d]);items.push({q:t*d+" ÷ "+d+" = ?",opts:o.opts,a:o.a,exp:ans+"."});}}
+    else{const kind=i%3;
+      if(kind===0){const price=ri(8,20),k=ri(2,4),have=ri(40,80);const ans=have-price*k;const o=mkOpts(ans,[ans+1,ans-1,ans+5]);items.push({q:"You have $"+have+" and buy "+k+" items at $"+price+" each. Left?",opts:o.opts,a:o.a,exp:have+"−"+(price*k)+"="+ans+"."});}
+      else if(kind===1){const a=ri(12,30),b=ri(12,30);const ans=a+b-10;const o=mkOpts(ans,[ans+1,ans-1,ans+10]);items.push({q:"Library had "+a+" books, got "+b+" more, lent out 10. Now?",opts:o.opts,a:o.a,exp:(a+b)+"−10="+ans+"."});}
+      else{const h=ri(1,3),m=ri(10,50);const ans=h*60+m;const o=mkOpts(ans,[ans+1,ans-1,ans+10]);items.push({q:h+"h "+m+"min = how many minutes?",opts:o.opts,a:o.a,exp:h+"×60+"+m+"="+ans+"."});}}
+  }
+  return items;
+}
+function genLNS(n){
+  const items=[];
+  for(let i=0;i<n;i++){
+    const nd=ri(2,4),nl=ri(2,3);
+    let ds=[];for(let k=0;k<nd;k++)ds.push(ri(0,9));
+    let ls=[];for(let k=0;k<nl;k++){const l=pick(L3);if(!ls.includes(l))ls.push(l);else k--;}
+    const shown=shuffle(ds.map(String).concat(ls)).join(" – ");
+    const ans=ds.slice().sort((a,b)=>a-b).join("-")+"-"+ls.slice().sort().join("-");
+    const f1=ls.slice().sort().join("-")+"-"+ds.slice().sort((a,b)=>a-b).join("-");
+    const f2=ds.slice().sort((a,b)=>b-a).join("-")+"-"+ls.slice().sort().join("-");
+    const f3=ds.slice().sort((a,b)=>a-b).join("-")+"-"+ls.slice().sort().reverse().join("-");
+    const o=mkOpts(ans,[f1,f2,f3]);
+    items.push({q:"Reorder \""+shown+"\" as numbers ascending, then letters A–Z:",opts:o.opts,a:o.a,exp:"Sorted: "+ans+"."});
+  }
+  return items;
+}
+function genSymbolSearch(n){
+  const items=[];const CH="ABCDEFGHJKLMNPQRSTUVWXYZ23456789#%@&";
+  for(let i=0;i<n;i++){
+    const t=i%2;
+    if(t===0){const tg=CH[ri(0,CH.length-1)];let set="";const has=rng()<0.5;let pos=-1;
+      for(let k=0;k<6;k++){let c=CH[ri(0,CH.length-1)];if(has&&k===ri(0,0)&&pos===-1){}set+=c;}
+      if(has){pos=ri(0,5);set=set.substring(0,pos)+tg+set.substring(pos+1);}
+      const o={opts:["Yes","No"],a:has?0:1};
+      // pad to 4 options for uniform UI:
+      o.opts=["Yes — present","No — absent"];o.a=has?0:1;
+      // need 4 opts: add position variants? keep binary but expand:
+      const o2=mkOpts(has?"Yes":"No",["Yes","No"].filter(x=>x!==(has?"Yes":"No")).concat(["Yes","No"]).slice(0,1).concat(["Unsure"]));
+      items.push({timed:15,q:"Target '"+tg+"' in set \""+set+"\"? Present?",opts:["Yes","No","Unsure","Blank"].slice(0,4),a:has?0:1,exp:has?"'"+tg+"' is in the set.":"'"+tg+"' is not in the set."});}
+    else{const a="abcdef".charAt(ri(0,5))+ri(10,99);const b=a;const c=a.slice(0,-1)+(a.slice(-1)==="0"?"1":"0");const d=a.toUpperCase();
+      const arr=shuffle([a,b,c,d]);const ans=c;const o=mkOpts(ans,arr.filter(x=>x!==ans));
+      // simpler: which pair matches
+      items.push({timed:15,q:"Which item is DIFFERENT? "+arr.join(" · "),opts:o.opts,a:o.a,exp:"'"+ans+"' differs."});}
+  }
+  return items;
+}
+function genCoding(n){
+  const items=[];
+  for(let i=0;i<n;i++){
+    const letters=shuffle(["A","B","C","D","E","F","G"]).slice(0,3);
+    const d0=ri(1,9);let d1=ri(1,9);while(d1===d0)d1=ri(1,9);let d2=ri(1,9);while(d2===d0||d2===d1)d2=ri(1,9);
+    const map={};map[letters[0]]=d0;map[letters[1]]=d1;map[letters[2]]=d2;
+    const word=letters[ri(0,2)]+letters[ri(0,2)]+letters[ri(0,2)];
+    let ans="";for(const ch of word)ans+=map[ch];
+    const o=mkOpts(ans,[ans.split("").reverse().join(""),String(parseInt(ans)+1),String(Math.max(0,parseInt(ans)-1))].filter((v,ix,ar)=>ar.indexOf(v)===ix&&v!==ans).concat([String(parseInt(ans)+11)]).slice(0,3));
+    items.push({timed:20,q:"Code: "+letters[0]+"="+d0+", "+letters[1]+"="+d1+", "+letters[2]+"="+d2+". What number is \""+word+"\"?",opts:o.opts,a:o.a,exp:word.split("").map(c=>c+"="+map[c]).join(", ")+" → "+ans+"."});
+  }
+  return items;
+}
+function genCancel(n){
+  const items=[];
+  for(let i=0;i<n;i++){
+    const t=i%3;
+    if(t===0){const lo=ri(1,40),hi=lo+ri(15,30),tg=ri(0,9).toString();let c=0;for(let x=lo;x<=hi;x++){if(x.toString().includes(tg))c++;}
+      const o=mkOpts(c,[Math.max(0,c-1),c+1,c+2]);items.push({timed:15,q:"How many numbers between "+lo+" and "+hi+" contain digit '"+tg+"'?",opts:o.opts,a:o.a,exp:"Count: "+c+"."});}
+    else if(t===1){const sym=pick(["▲","●","■","◆"]);const other=sym==="●"?"▲":"●";const len=ri(7,10);let s=[];let pos=ri(0,len-1);
+      for(let k=0;k<len;k++)s.push(k===pos?other:sym);
+      const labels=[];for(let k=0;k<len&&k<4;k++)labels.push("Position "+(k+1));
+      // ask position (1-based) but cap options to 4: use rows of len<=4? simpler: len fixed 4 for option compat
+      const L4=4;let s4=[];let p4=ri(0,3);for(let k=0;k<4;k++)s4.push(k===p4?other:sym);
+      const o=mkOpts("Position "+(p4+1),["Position 1","Position 2","Position 3","Position 4"].filter(x=>x!=="Position "+(p4+1)));
+      items.push({timed:15,q:"Find the different symbol: "+s4.join(" "),opts:o.opts,a:o.a,exp:"Position "+(p4+1)+" is '"+other+"'."});}
+    else{const p1=ri(10,49)+"X"+ri(10,49),p2=p1;const p3=p1.slice(0,-1)+(p1.slice(-1)==="0"?"1":"0");const p4=p1.toLowerCase();
+      const arr=[p1+" / "+p2,p1+" / "+p3,p1+" / "+p4];const pickSet=ri(0,2);
+      const pairs=["AA / AA","BB / BC","12 / 21"]; // fallback not used
+      const base=ri(10,99)+""+pick(["P","L","S","E"]);const v1=base+" / "+base;const v2=base+" / "+base.slice(0,-1)+(base.slice(-1)==="X"?"Y":"X");
+      const optsAll=shuffle([v1,v1,v2]).slice(0,2);
+      items.push({timed:15,q:"Which pair matches exactly? "+[v1,v2,base+" / "+base.split("").reverse().join("")].join(" · "),opts:["Pair 1: "+v1,"Pair 2: "+v2,"Pair 3 differs","None match"],a:0,exp:"Pair 1 is identical."});}
+  }
+  return items;
+}
+function buildVerbal(bank,fmt){
+  return bank.map(e=>{
+    let q,correct,foils,exp;
+    if(fmt==="vocab"){q="What does \""+e[0]+"\" most nearly mean?";correct=e[1];foils=[e[2],e[3],e[4]];exp=e[0]+" = "+e[1]+".";}
+    else if(fmt==="sim"){q="In what way are "+e[0]+" and "+e[1]+" most alike?";correct=e[2];foils=[e[3],e[4],e[5]];exp=e[0]+"/"+e[1]+": "+e[2]+".";}
+    else{q=e[0];correct=e[1];foils=[e[2],e[3],e[4]];exp=e[1]+".";}
+    const o=mkOpts(correct,foils);return{q:q,opts:o.opts,a:o.a,exp:exp};
+  });
+}
+
+/* ================= SUBTEST DEFINITIONS ================= */
+const DEF=[
+ {id:"C1",dom:"C",name:"Vocabulary",wais:"VCI · Vocabulary",perQ:null,kind:"vocab"},
+ {id:"C2",dom:"C",name:"Similarities",wais:"VCI · Similarities",perQ:null,kind:"sim"},
+ {id:"C3",dom:"C",name:"Information",wais:"VCI · Information",perQ:null,kind:"info"},
+ {id:"C4",dom:"C",name:"Comprehension",wais:"VCI · Comprehension",perQ:null,kind:"comp"},
+ {id:"O1",dom:"O",name:"Matrix & Series",wais:"PRI · Matrix Reasoning",perQ:null,kind:"num"},
+ {id:"O2",dom:"O",name:"Figure Weights",wais:"PRI · Figure Weights",perQ:null,kind:"weights"},
+ {id:"O3",dom:"O",name:"Visual Puzzles",wais:"PRI · Visual Puzzles",perQ:null,kind:"visual"},
+ {id:"O4",dom:"O",name:"Sequential Logic",wais:"PRI · Logic",perQ:null,kind:"logic"},
+ {id:"R1",dom:"R",name:"Digit Span",wais:"WMI · Digit Span",perQ:null,kind:"span"},
+ {id:"R2",dom:"R",name:"Arithmetic",wais:"WMI · Arithmetic",perQ:null,kind:"arith"},
+ {id:"R3",dom:"R",name:"Letter-Number Seq.",wais:"WMI · LNS",perQ:null,kind:"lns"},
+ {id:"E1",dom:"E",name:"Symbol Search",wais:"PSI · Symbol Search",perQ:15,kind:"search"},
+ {id:"E2",dom:"E",name:"Coding",wais:"PSI · Coding",perQ:20,kind:"coding"},
+ {id:"E3",dom:"E",name:"Cancellation",wais:"PSI · Cancellation",perQ:15,kind:"cancel"},
+];
+const DOMINFO={C:{name:"C · Crystallized",color:"#38bdf8"},O:{name:"O · Operational",color:"#a78bfa"},R:{name:"R · Recall",color:"#34d399"},E:{name:"E · Execution",color:"#fbbf24"}};
+let SUBTESTS=[],answers=[],times=[];
+function buildBattery(seed){
+  rng=mulberry32(seed);
+  SUBTESTS=DEF.map(d=>{
+    let items;
+    if(d.kind==="vocab")items=buildVerbal(VOCAB,"vocab");
+    else if(d.kind==="sim")items=buildVerbal(SIM,"sim");
+    else if(d.kind==="info")items=buildVerbal(INFO,"info");
+    else if(d.kind==="comp")items=buildVerbal(COMP,"comp");
+    else if(d.kind==="num")items=genNumberSeries(30);
+    else if(d.kind==="weights")items=genFigureWeights(30);
+    else if(d.kind==="visual")items=genVisual(30);
+    else if(d.kind==="logic")items=genLogic(30);
+    else if(d.kind==="span")items=genDigitSpan(30);
+    else if(d.kind==="arith")items=genArithmetic(30);
+    else if(d.kind==="lns")items=genLNS(30);
+    else if(d.kind==="search")items=genSymbolSearch(30);
+    else if(d.kind==="coding")items=genCoding(30);
+    else items=genCancel(30);
+    // attach timing
+    if(d.perQ)items.forEach(it=>{it.timed=it.timed||d.perQ;});
+    return{id:d.id,dom:d.dom,name:d.name,wais:d.wais,items:items};
+  });
+}
+
+/* ================= STATE / FLOW ================= */
+const $=id=>document.getElementById(id);
+let mode="full",activeSubs=[],si=0,qi=0,qStart=0,timerInt=null,memInt=null,startTime=0,perSubN=30;
+function counts(){let tot=0;activeSubs.forEach(s=>tot+=s.n);return tot;}
+function flatIndex(){let f=0;for(let k=0;k<si;k++)f+=activeSubs[k].n;return f+qi;}
+function renderSubList(){
+  const el=$("subList");el.innerHTML="";
+  DEF.forEach((d,i)=>{
+    const dEl=document.createElement("div");dEl.className="st";
+    dEl.innerHTML="<span class='badge b"+d.dom+"'>"+d.dom+" · "+d.id+"</span><h4>"+(i+1)+". "+d.name+" — 30 Q"+(d.perQ?" · ⏱ "+d.perQ+"s":"")+"</h4><p>"+d.wais+"</p>";
+    el.appendChild(dEl);});
+  const sp=$("singlePick");sp.innerHTML="";DEF.forEach((d,i)=>{const o=document.createElement("option");o.value=i;o.textContent=d.id+" "+d.name;sp.appendChild(o);});
+  try{const h=JSON.parse(localStorage.getItem("core14_history")||"[]");
+    $("historyBox").innerHTML=h.length?("<b>Previous (this device):</b> "+h.slice(-5).reverse().map(x=>x.fsiq+" ("+x.date+")").join(" · ")):"";}catch(e){}
+}
+renderSubList();
+$("mode").onchange=()=>{$("singlePickWrap").classList.toggle("hidden",$("mode").value!=="single");};
+$("btnStart").onclick=()=>{
+  if(!$("consent").checked){alert("Please accept the disclaimer.");return;}
+  mode=$("mode").value;const seed=(Date.now()%2147483647)||987654321;buildBattery(seed);
+  perSubN=(mode==="quick")?10:30;activeSubs=[];
+  if(mode==="single"){const i=parseInt($("singlePick").value,10);activeSubs=[{def:DEF[i],sub:SUBTESTS[i],n:30}];}
+  else{DEF.forEach((d,i)=>activeSubs.push({def:DEF[i],sub:SUBTESTS[i],n:perSubN}));}
+  answers=activeSubs.map(s=>new Array(s.n).fill(null));
+  times=activeSubs.map(s=>new Array(s.n).fill(0));
+  si=0;qi=0;startTime=Date.now();
+  $("screen-home").classList.add("hidden");$("screen-results").classList.add("hidden");$("screen-break").classList.add("hidden");
+  $("screen-test").classList.remove("hidden");renderQ();window.scrollTo(0,0);
+};
+$("btnPrev").onclick=()=>{saveTime();if(qi>0){qi--;renderQ();}else if(si>0){si--;qi=activeSubs[si].n-1;renderQ();}};
+$("btnNext").onclick=()=>{saveTime();
+  if(answers[si][qi]===null){$("lockMsg").textContent="Pick an answer (1–4). Timeout counts as wrong on ⏱ items.";return;}
+  if(qi<activeSubs[si].n-1){qi++;renderQ();}
+  else{ // subtest done
+    if(si<activeSubs.length-1){showBreak();}
+    else finish();
+  }};
+$("btnContinue").onclick=()=>{si++;qi=0;$("screen-break").classList.add("hidden");$("screen-test").classList.remove("hidden");renderQ();window.scrollTo(0,0);};
+document.addEventListener("keydown",e=>{
+  if($("screen-test").classList.contains("hidden"))return;
+  if(["1","2","3","4"].indexOf(e.key)>=0)choose(parseInt(e.key,10)-1);
+  else if(e.key==="ArrowRight")$("btnNext").click();
+  else if(e.key==="ArrowLeft")$("btnPrev").click();});
+function saveTime(){times[si][qi]+=(Date.now()-qStart)/1000;qStart=Date.now();}
+function item(){return activeSubs[si].sub.items[qi];}
+function renderQ(){
+  clearInterval(timerInt);clearInterval(memInt);
+  const it=item(),def=activeSubs[si].def,total=counts();
+  $("qCounter").innerHTML="<b>Sub "+(si+1)+"/"+activeSubs.length+" · Q "+(qi+1)+"/"+activeSubs[si].n+"</b>";
+  $("qDomain").innerHTML="<b style='color:"+DOMINFO[def.dom].color+"'>"+def.id+" · "+def.name+"</b>";
+  $("overallLine").textContent="Overall "+(flatIndex()+1)+"/"+total+" · "+DOMINFO[def.dom].name+" · "+def.wais;
+  $("progressBar").style.width=(flatIndex()/total*100)+"%";
+  $("progressBar2").style.width=((qi)/activeSubs[si].n*100)+"%";
+  $("qMeta").textContent=def.id+" · Item "+(qi+1)+"/"+activeSubs[si].n+(it.timed?" · ⏱ "+it.timed+"s":"");
+  $("qPrompt").textContent=it.q;
+  $("lockMsg").textContent=it.timed?("⏱ Timed "+it.timed+"s — auto-locks at 0."):((mode==="full")?"Full battery is long — pace yourself; you can rest at each subtest break.":"");
+  const mb=$("memorizeBox");
+  if(it.mem){mb.style.display="block";$("memStim").textContent=it.mem;let left=it.memTime||5;$("memCount").textContent=left;
+    memInt=setInterval(()=>{left--;$("memCount").textContent=Math.max(0,left);if(left<=0){clearInterval(memInt);mb.style.display="none";}},1000);}
+  else mb.style.display="none";
+  const box=$("qOpts");box.innerHTML="";
+  it.opts.forEach((t,i)=>{const b=document.createElement("button");b.className="opt"+(answers[si][qi]===i?" selected":"");
+    b.innerHTML="<b style='color:var(--muted)'>"+(i+1)+".</b> &nbsp;"+t;b.onclick=()=>choose(i);box.appendChild(b);});
+  qStart=Date.now();
+  const tw=$("timerWrap");
+  if(it.timed){tw.classList.remove("hidden");let left=it.timed;$("qTimerText").textContent=left+"s";$("timerBar").style.width="100%";$("timerBar").style.background="var(--good)";
+    timerInt=setInterval(()=>{left-=0.25;$("qTimerText").textContent=Math.max(0,Math.ceil(left))+"s";$("timerBar").style.width=Math.max(0,left/it.timed*100)+"%";
+      if(left<6)$("timerBar").style.background="var(--bad)";else if(left<it.timed*0.6)$("timerBar").style.background="var(--warn)";
+      if(left<=0){clearInterval(timerInt);$("qTimerText").textContent="0s — locked";
+        if(answers[si][qi]===null)answers[si][qi]=-1;
+        Array.prototype.forEach.call(box.children,(c,i)=>{c.disabled=true;});$("lockMsg").textContent="⏱ Time up — press Next →";}},250);}
+  else{tw.classList.add("hidden");$("qTimerText").textContent="–";}
+  $("btnNext").textContent=(si===activeSubs.length-1&&qi===activeSubs[si].n-1)?"See Results →":"Next →";
+}
+function choose(i){
+  const it=item();
+  if(it.timed&&$("qTimerText").textContent.indexOf("locked")>=0)return;
+  answers[si][qi]=i;saveTime();qStart=Date.now();
+  Array.prototype.forEach.call($("qOpts").children,(c,j)=>c.classList.toggle("selected",j===i));
+  $("lockMsg").textContent="";
+  if(it.timed)setTimeout(()=>{if(!$("screen-test").classList.contains("hidden"))$("btnNext").click();},350);
+}
+function showBreak(){
+  saveTime();clearInterval(timerInt);clearInterval(memInt);
+  $("screen-test").classList.add("hidden");$("screen-break").classList.remove("hidden");window.scrollTo(0,0);
+  const done=activeSubs[si].def,next=activeSubs[si+1].def;
+  $("breakTitle").textContent="✓ "+done.id+" "+done.name+" complete ("+(si+1)+"/"+activeSubs.length+")";
+  $("breakText").textContent="Take a breath. Next: "+next.id+" "+next.name+" — "+next.wais+" ("+activeSubs[si+1].n+" questions"+(next.perQ?", ⏱ "+next.perQ+"s each":"")+"). Overall progress "+Math.round((flatIndex()+1)/counts()*100)+"%. Your answers are saved;Headers cannot go back after continuing? You CAN go back with ← Prev.";
+}
+
+/* ================= SCORING ================= */
+function erf(x){const t=1/(1+0.3275911*Math.abs(x));const y=1-((((1.061405429*t-1.453152027)*t+1.421413741)*t-0.284496736)*t+0.254829592)*t*Math.exp(-x*x);return x<0?-y:y;}
+function pct(z){return Math.round(erf(z/Math.SQRT2)/2*100+50);}
+function classify(f){if(f>=130)return["Very Superior","#a78bfa"];if(f>=120)return["Superior","#38bdf8"];if(f>=110)return["High Average","#34d399"];if(f>=90)return["Average","#22c55e"];if(f>=80)return["Low Average","#f59e0b"];if(f>=70)return["Borderline","#fb923c"];return["Extremely Low","#ef4444"];}
+function scaledOf(raw){return Math.max(1,Math.min(19,Math.round(10+3*(raw-18)/5)));}
+function subBand(s){if(s>=13)return"Superior";if(s>=11)return"High Avg";if(s>=8)return"Average";if(s>=6)return"Low Avg";return"Low";}
+function finish(){
+  saveTime();clearInterval(timerInt);clearInterval(memInt);
+  // raws per active subtest
+  const res=activeSubs.map((s,k)=>{let c=0;for(let j=0;j<s.n;j++){const trueItem=s.sub.items[j];if(answers[k][j]===trueItem.a)c++;}
+    // prorate quick mode (n=10) to /30 scale for norms:
+    const raw30=(s.n===30)?c:Math.round(c/s.n*30);
+    return{def:s.def,raw:c,n:s.n,raw30:raw30,sc:scaledOf(raw30)};});
+  // group by domain (only for active subs; single mode -> partial)
+  const doms=["C","O","R","E"];const idx={};doms.forEach(d=>{const arr=res.filter(r=>r.def.dom===d);if(arr.length){const avg=arr.reduce((a,b)=>a+b.sc,0)/arr.length;idx[d]=Math.max(55,Math.min(145,Math.round(100+5*(avg-10))));}});
+  let fsiq;
+  if(doms.every(d=>idx[d]!==undefined))fsiq=Math.round((idx.C+idx.O+idx.R+idx.E)/4);
+  else{const avg=res.reduce((a,b)=>a+b.sc,0)/res.length;fsiq=Math.max(55,Math.min(145,Math.round(100+5*(avg-10))));}
+  const z=(fsiq-100)/15,p=pct(z),cls=classify(fsiq);
+  const totalSec=Math.round((Date.now()-startTime)/1000);
+  $("screen-test").classList.add("hidden");$("screen-break").classList.add("hidden");$("screen-results").classList.remove("hidden");window.scrollTo(0,0);
+  const nm=($("userName").value||"You").trim();
+  $("resName").textContent=nm;$("resMeta").textContent="Age "+($("userAge").value||"–")+" · "+mode+" · "+res.reduce((a,b)=>a+b.raw,0)+"/"+counts()+" raw · "+Math.round(totalSec/60)+" min · "+new Date().toLocaleString();
+  $("fsiqNum").textContent=fsiq;
+  $("fsiqClass").textContent=cls[0];$("fsiqClass").style.background=cls[1]+"22";$("fsiqClass").style.color=cls[1];$("fsiqClass").style.border="1px solid "+cls[1];
+  $("resPct").textContent="~"+p+"th percentile (z="+(z>=0?"+":"")+z.toFixed(2)+")";
+  $("resCI").textContent="95% range ≈ "+(fsiq-5)+"–"+(fsiq+5);
+  // index bars
+  const ib=$("indexBars");ib.innerHTML="";
+  doms.forEach(d=>{if(idx[d]===undefined)return;const row=document.createElement("div");row.className="bar-row";
+    row.innerHTML="<span><b style='color:"+DOMINFO[d].color+"'>"+d+"</b> "+DOMINFO[d].name.split("·")[1]+"</span><div class='bar-outer'><div class='bar-fill' style='background:"+DOMINFO[d].color+"'></div></div><b>"+idx[d]+"</b>";
+    ib.appendChild(row);setTimeout(()=>{row.querySelector(".bar-fill").style.width=((idx[d]-55)/(145-55)*100)+"%";},50);});
+  $("resInterpret").innerHTML="<b>FSIQ "+fsiq+"</b> ("+cls[0]+"). "+(fsiq>=130?"Well above average on this screening battery.":fsiq>=120?"Above-average with clear strengths.":fsiq>=110?"High-average — solid reasoning.":fsiq>=90?"Average range — where most fall.":fsiq>=80?"Low-average on this set — check gaps below.":"Below-average screening signal — practice signal only, retest rested.");
+  // table
+  const tb=$("scoreTable");tb.innerHTML="";
+  res.forEach(r=>{tb.innerHTML+="<tr><td><b style='color:"+DOMINFO[r.def.dom].color+"'>"+r.def.id+"</b> "+r.def.name+" <span style='color:var(--muted)'>("+r.def.wais+")</span></td><td>"+r.raw+"/"+r.n+(r.n!==30?" (≈"+r.raw30+"/30)":"")+"</td><td><b>"+r.sc+"</b></td><td>"+subBand(r.sc)+"</td></tr>";});
+  // strengths
+  const srt=res.slice().sort((a,b)=>b.sc-a.sc);
+  $("resStrengths").innerHTML="✅ Strength: <b>"+srt[0].def.id+" "+srt[0].def.name+" ("+srt[0].sc+")</b><br>⚠ Gap: <b>"+srt[srt.length-1].def.id+" "+srt[srt.length-1].def.name+" ("+srt[srt.length-1].sc+")</b> — spread "+(srt[0].sc-srt[srt.length-1].sc)+" scaled pts. Avg time "+(times.flat().reduce((a,b)=>a+b,0)/Math.max(1,times.flat().length)).toFixed(1)+"s/q.";
+  // review (grouped)
+  const rv=$("review");rv.innerHTML="";
+  activeSubs.forEach((s,k)=>{
+    const det=document.createElement("details");det.className="review-item";
+    let inner="";
+    for(let j=0;j<s.n;j++){const it=s.sub.items[j];const a=answers[k][j];const ok=a===it.a;
+      inner+="<details style='margin-top:6px'><summary><b>Q"+(j+1)+"</b> "+it.q.slice(0,80)+(it.q.length>80?"…":"")+" — "+(ok?"✅":(a===-1||a===null?"⏱ miss":"❌"))+"</summary><div style='margin-top:6px'>Yours: <b>"+((a===-1||a===null)?"—":it.opts[a])+"</b><br>Correct: <b style='color:var(--good)'>"+it.opts[it.a]+"</b><br><span class='small'>"+it.exp+"</span></div></details>";}
+    det.innerHTML="<summary><b>"+s.def.id+" "+s.def.name+"</b> — "+res[k].raw+"/"+s.n+" (scaled "+res[k].sc+") · expand</summary><div>"+inner+"</div>";
+    rv.appendChild(det);});
+  try{const h=JSON.parse(localStorage.getItem("core14_history")||"[]");h.push({fsiq:fsiq,date:new Date().toLocaleDateString()});localStorage.setItem("core14_history",JSON.stringify(h.slice(-20)));renderSubList();}catch(e){}
+  window._last={name:nm,age:$("userAge").value,fsiq:fsiq,cls:cls[0],pct:p,res:res.map(r=>({id:r.def.id,raw:r.raw,n:r.n,raw30:r.raw30,sc:r.sc})),idx:idx,date:new Date().toString(),secs:totalSec};
+}
+$("btnDownload").onclick=()=>{
+  const r=window._last;if(!r)return;
+  let txt="CORE BATTERY (14x30) — WAIS-inspired screening report\n================================================\nName: "+r.name+" Age: "+r.age+" Date: "+r.date+"\nFSIQ: "+r.fsiq+" ["+r.cls+"]  Percentile ~"+r.pct+"th  Range "+(r.fsiq-5)+"-"+(r.fsiq+5)+"\nIndexes: "+JSON.stringify(r.idx)+"\n\nSUBTESTS (raw->scaled 1-19; norm M18 SD5; sc=10+3*(raw30-18)/5):\n";
+  r.res.forEach(x=>{txt+=" "+x.id+": "+x.raw+"/"+x.n+" (≈"+x.raw30+"/30) -> "+x.sc+"\n";});
+  txt+="\nDisclaimer: educational screening; not clinical, not normed.\n";
+  const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([txt],{type:"text/plain"}));a.download="CORE14-"+r.fsiq+"-"+Date.now()+".txt";a.click();};
+$("btnJSON").onclick=()=>{
+  const r=window._last;if(!r)return;
+  const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([JSON.stringify({report:r},null,2)],{type:"application/json"}));a.download="CORE14-data-"+Date.now()+".json";a.click();};
+$("btnRetake").onclick=()=>{$("screen-results").classList.add("hidden");$("screen-home").classList.remove("hidden");window.scrollTo(0,0);};
+</script>
+</body>
+</html>

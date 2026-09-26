@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BlendClone RENDER M1 — render-demo</title>
+<style>
+  html,body{margin:0;height:100%;background:#1e1e1e;color:#ddd;font-family:Consolas,monospace}
+  #bar{padding:8px 12px;background:#2d2d2d;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+  #view{width:100vw;height:calc(100vh - 105px);display:block;touch-action:none}
+  select,button,input{background:#444;color:#fff;border:1px solid #666;padding:4px 8px}
+  #stats{margin-left:auto;font-size:12px}
+  #note{padding:6px 12px;font-size:12px;color:#9c9}
+  #thumb{vertical-align:middle;border:1px solid #666;margin-left:8px}
+</style>
+</head>
+<body>
+<div id="bar">
+  <b>RENDER M1 demo</b>
+  <label>material <select id="mat"><option value="plastic">red plastic</option><option value="metal">metal</option></select></label>
+  <label>mesh <select id="mesh"><option value="both">sphere + cube</option><option value="sphere">sphere</option><option value="cube">cube</option></select></label>
+  <label>light azimuth <input id="azim" type="range" min="-180" max="180" value="30" style="width:120px"><span id="azv">30°</span></label>
+  <button id="m0">solid</button><button id="m1">studio</button><button id="m2">rendered</button>
+  <button id="snap">PNG export</button>
+  <button id="cpu">CPU tile 64×64</button><canvas id="thumb" width="64" height="64"></canvas>
+  <span id="stats">init…</span>
+</div>
+<div id="note">Progressive CPU pathtracer: stub — single tile, spp≤4. Full tiled progressive rendering lands in M2.</div>
+<canvas id="view"></canvas>
+<script type="module">
+import { PreviewRenderer } from './src/render/preview.js';
+import { createMaterial } from './src/render/material.js';
+import { dirLight, setLights } from './src/render/lights.js';
+import { renderTile } from './src/render/pathtracer.js';
+import { floatToImageData } from './src/render/color.js';
+
+// --- minimal mat4 (column-major, MVP style) ---
+function persp(o,f,a,n,fr){const t=1/Math.tan(f/2);o.fill(0);o[0]=t/a;o[5]=t;o[10]=(fr+n)/(n-fr);o[11]=-1;o[14]=2*fr*n/(n-fr);return o;}
+function lookAt(o,e,t,up){let zx=e[0]-t[0],zy=e[1]-t[1],zz=e[2]-t[2];let l=Math.hypot(zx,zy,zz);zx/=l;zy/=l;zz/=l;
+  let xx=up[1]*zz-up[2]*zy,xy=up[2]*zx-up[0]*zz,xz=up[0]*zy-up[1]*zx;l=Math.hypot(xx,xy,xz)||1;xx/=l;xy/=l;xz/=l;
+  const yx=zy*xz-zz*xy,yy=zz*xx-zx*xz,yz=zx*xy-zy*xx;
+  o.set([xx,yx,zx,0, xy,yy,zy,0, xz,yz,zz,0, -(xx*e[0]+xy*e[1]+xz*e[2]),-(yx*e[0]+yy*e[1]+yz*e[2]),-(zx*e[0]+zy*e[1]+zz*e[2]),1]);return o;}
+
+// --- geometry: cube (24v) + UV sphere, merged with x-offsets ---
+function cube(s=0.8){const P=[],N=[],I=[];
+  const F=[[[0,0,1],[s,s,s],[-s,s,s],[ -s,-s,s],[s,-s,s]],[[0,0,-1],[-s,-s,-s],[-s,s,-s],[s,s,-s],[s,-s,-s]],
+    [[0,1,0],[-s,s,-s],[-s,s,s],[s,s,s],[s,s,-s]],[[0,-1,0],[-s,-s,s],[-s,-s,-s],[s,-s,-s],[s,-s,s]],
+    [[1,0,0],[s,-s,-s],[s,s,-s],[s,s,s],[s,-s,s]],[[-1,0,0],[-s,-s,s],[-s,s,s],[-s,s,-s],[-s,-s,-s]]];
+  F.forEach((f,fi)=>{const b=fi*4;const[n,...v]=f;v.forEach(p=>{P.push(...p);N.push(...n);});I.push(b,b+1,b+2,b,b+2,b+3);});
+  return{pos:new Float32Array(P),nrm:new Float32Array(N),idx:new Uint16Array(I)};}
+function sphere(r=0.85,lat=20,lon=28){const P=[],N=[],I=[];
+  for(let j=0;j<=lat;j++){const th=j/lat*Math.PI,st=Math.sin(th),ct=Math.cos(th);
+    for(let i=0;i<=lon;i++){const ph=i/lon*2*Math.PI;const x=st*Math.cos(ph),y=ct,z=st*Math.sin(ph);
+      P.push(r*x,r*y,r*z);N.push(x,y,z);}}
+  for(let j=0;j<lat;j++)for(let i=0;i<lon;i++){const a=j*(lon+1)+i,b=a+1,c=a+lon+1,d=c+1;I.push(a,c,b,b,c,d);}
+  return{pos:new Float32Array(P),nrm:new Float32Array(N),idx:new Uint16Array(I)};}
+function merge(parts){let nv=0,ni=0;parts.forEach(p=>{nv+=p.pos.length/3;ni+=p.idx.length;});
+  const P=new Float32Array(nv*3),N=new Float32Array(nv*3),I=new Uint16Array(ni);let vo=0,io=0;
+  for(const p of parts){P.set(p.pos,vo*3);N.set(p.nrm,vo*3);const ox=p.off||[0,0,0];
+    for(let i=0;i<p.pos.length/3;i++){P[(vo+i)*3]+=ox[0];P[(vo+i)*3+1]+=ox[1];P[(vo+i)*3+2]+=ox[2];}
+    for(let i=0;i<p.idx.length;i++)I[io+i]=p.idx[i]+vo;vo+=p.pos.length/3;io+=p.idx.length;}
+  return{pos:P,nrm:N,idx:I};}
+const C=cube(),S=sphere();
+C.off=[-1.15,0,0];S.off=[1.15,0,0];
+const GEOMS={both:merge([C,S]),sphere:merge([S]),cube:merge([C])};
+
+// --- renderer + state ---
+const canvas=document.getElementById('view'),stats=document.getElementById('stats');
+const renderer=new PreviewRenderer().init(canvas);
+const PRESETS={plastic:{baseColor:[0.85,0.05,0.03],metallic:0,roughness:0.45,emissive:[0,0,0]},
+  metal:{baseColor:[0.9,0.9,0.95],metallic:1,roughness:0.25,emissive:[0,0,0]}};
+let material=createMaterial(PRESETS.plastic),mode='studio',meshKey='both';
+let theta=0.7,phi=1.15,radius=6.5,drag=false,lx=0,ly=0;
+renderer.setMesh(GEOMS.both.pos,GEOMS.both.nrm,GEOMS.both.idx);
+function lights(){const az=+document.getElementById('azim').value*Math.PI/180,el=0.9;
+  return setLights([dirLight({direction:[Math.cos(el)*Math.cos(az),Math.sin(el),Math.cos(el)*Math.sin(az)],intensity:1.4}),
+    dirLight({direction:[-0.6,0.3,-0.5],color:[0.5,0.6,0.9],intensity:0.35})]);}
+document.getElementById('mat').onchange=e=>{material=createMaterial(PRESETS[e.target.value]);};
+document.getElementById('mesh').onchange=e=>{meshKey=e.target.value;const g=GEOMS[meshKey];renderer.setMesh(g.pos,g.nrm,g.idx);};
+document.getElementById('azim').oninput=e=>{document.getElementById('azv').textContent=e.target.value+'°';};
+document.getElementById('m0').onclick=()=>mode='solid';
+document.getElementById('m1').onclick=()=>mode='studio';
+document.getElementById('m2').onclick=()=>mode='rendered';
+document.getElementById('snap').onclick=()=>{renderer.snapshot().toBlob(b=>{const a=document.createElement('a');
+  a.href=URL.createObjectURL(b);a.download='render-demo-m1.png';a.click();});};
+document.getElementById('cpu').onclick=()=>{
+  const t0=performance.now();
+  const az=+document.getElementById('azim').value*Math.PI/180;
+  const buf=renderTile({spheres:[{center:[0,0,0],radius:1,material}],
+    lights:[{direction:[Math.cos(az),0.8,Math.sin(az)],color:[1,1,1],intensity:1.4}]},
+    {eye:[0,0,4.2],target:[0,0,0],up:[0,1,0],fovY:0.7,aspect:1,width:64,height:64},0,0,64,64,2);
+  const img=floatToImageData(buf,64,64);
+  document.getElementById('thumb').getContext('2d').putImageData(img,0,0);
+  stats.textContent=`CPU tile 64×64 spp=2 in ${(performance.now()-t0).toFixed(0)}ms`;};
+canvas.addEventListener('pointerdown',e=>{drag=true;lx=e.clientX;ly=e.clientY;canvas.setPointerCapture(e.pointerId);});
+canvas.addEventListener('pointermove',e=>{if(!drag)return;theta-= (e.clientX-lx)*0.005;phi=Math.min(Math.PI-0.05,Math.max(0.05,phi-(e.clientY-ly)*0.005));lx=e.clientX;ly=e.clientY;});
+canvas.addEventListener('pointerup',()=>drag=false);
+canvas.addEventListener('wheel',e=>{e.preventDefault();radius=Math.min(30,Math.max(2,radius*Math.exp(e.deltaY*0.001)));},{passive:false});
+const VIEW=new Float32Array(16),PROJ=new Float32Array(16);
+function resize(){const d=Math.min(devicePixelRatio||1,1.5);canvas.width=innerWidth*d;canvas.height=(innerHeight-105-25)*d;}
+addEventListener('resize',resize);resize();
+let frames=0,t0=performance.now();
+(function frame(t){theta+=drag?0:0.004;
+  const eye=[radius*Math.sin(phi)*Math.sin(theta),radius*Math.cos(phi),radius*Math.sin(phi)*Math.cos(theta)];
+  lookAt(VIEW,eye,[0,0,0],[0,1,0]);persp(PROJ,50*Math.PI/180,canvas.width/canvas.height,0.1,100);
+  renderer.render({proj:PROJ,view:VIEW,eye},material,lights(),mode);
+  frames++;const dt=t-t0;
+  if(dt>600){stats.textContent=`${(frames*1000/dt).toFixed(0)}fps · mode=${mode} · drag to orbit`;frames=0;t0=t;}
+  requestAnimationFrame(frame);})(performance.now());
+</script>
+</body>
+</html>

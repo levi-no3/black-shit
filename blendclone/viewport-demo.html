@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BlendClone M2 — Viewport Demo</title>
+<style>
+  html,body{margin:0;height:100%;background:#1e1e1e;color:#ddd;font-family:Consolas,monospace}
+  #bar{padding:8px 12px;background:#2d2d2d;display:flex;gap:12px;align-items:center;flex-wrap:wrap}
+  #view{width:800px;height:600px;display:block;touch-action:none;background:#1f1f24}
+  button{background:#444;color:#fff;border:1px solid #666;padding:4px 10px;cursor:pointer}
+  #stats{margin-left:auto;font-size:12px}
+  #hint{padding:6px 12px;font-size:12px;color:#999}
+</style>
+</head>
+<body>
+<div id="bar">
+  <b>BlendClone M2</b>
+  <button id="shading">shading: studio</button>
+  <button id="snap">PNG snapshot</button>
+  <span id="sel">sel: none (click a cube)</span>
+  <span id="stats">init…</span>
+</div>
+<canvas id="view" width="800" height="600"></canvas>
+<div id="hint">drag=orbit · RMB/shift-drag=pan · wheel=zoom · click=select (orange outline)</div>
+<script type="module">
+import { OrbitCamera } from "./src/viewport/camera.js";
+import { Scene, Object3D } from "./src/viewport/scene.js";
+import { ViewportRenderer } from "./src/viewport/renderer.js";
+import { pick } from "./src/viewport/picking.js";
+
+const canvas = document.getElementById("view");
+const stats = document.getElementById("stats");
+const selLabel = document.getElementById("sel");
+
+const renderer = new ViewportRenderer();
+if (!renderer.init(canvas)) {
+  stats.textContent = "WebGL2 NOT available on this GPU/browser — demo blocked";
+  throw new Error("no webgl2");
+}
+
+// Cube: 24 verts (per-face normals), 36 indices — same data as the M1 MVP.
+const cubeMesh = {
+  positions: new Float32Array([
+    -1,-1,1, 1,-1,1, 1,1,1, -1,1,1,
+    -1,-1,-1, -1,1,-1, 1,1,-1, 1,-1,-1,
+    -1,1,-1, -1,1,1, 1,1,1, 1,1,-1,
+    -1,-1,-1, 1,-1,-1, 1,-1,1, -1,-1,1,
+    1,-1,-1, 1,1,-1, 1,1,1, 1,-1,1,
+    -1,-1,-1, -1,-1,1, -1,1,1, -1,1,-1,
+  ]),
+  normals: new Float32Array([
+    0,0,1, 0,0,1, 0,0,1, 0,0,1, 0,0,-1, 0,0,-1, 0,0,-1, 0,0,-1,
+    0,1,0, 0,1,0, 0,1,0, 0,1,0, 0,-1,0, 0,-1,0, 0,-1,0, 0,-1,0,
+    1,0,0, 1,0,0, 1,0,0, 1,0,0, -1,0,0, -1,0,0, -1,0,0, -1,0,0,
+  ]),
+  indices: new Uint16Array([
+    0,1,2,0,2,3, 4,5,6,4,6,7, 8,9,10,8,10,11,
+    12,13,14,12,14,15, 16,17,18,16,18,19, 20,21,22,20,22,23,
+  ]),
+};
+
+const scene = new Scene();
+const cube = new Object3D(cubeMesh);
+cube.transform.position.set([0, 1, 0]);
+cube.color.set([0.55, 0.62, 0.7]);
+scene.add(cube);
+
+const mini = new Object3D(cubeMesh); // shares the mesh: tests buffer reuse + instancing
+mini.transform.position.set([-2.6, 0.5, -1.2]);
+mini.transform.scale.set([0.5, 0.5, 0.5]);
+mini.color.set([0.3, 0.55, 0.85]);
+scene.add(mini);
+
+const camera = new OrbitCamera([0, 0.8, 0], 7.5, 0.7, 1.12);
+
+// --- interaction: orbit / pan / zoom / click-select ---
+let drag = false, pan = false, lx = 0, ly = 0, downX = 0, downY = 0, moved = 0;
+canvas.addEventListener("pointerdown", (e) => {
+  drag = true; moved = 0; lx = downX = e.clientX; ly = downY = e.clientY;
+  pan = (e.button === 2 || e.shiftKey);
+  canvas.setPointerCapture(e.pointerId);
+});
+canvas.addEventListener("pointermove", (e) => {
+  if (!drag) return;
+  const dx = e.clientX - lx, dy = e.clientY - ly;
+  lx = e.clientX; ly = e.clientY;
+  moved += Math.abs(dx) + Math.abs(dy);
+  if (pan) camera.pan(dx, dy);
+  else camera.orbit(dx, dy);
+});
+canvas.addEventListener("pointerup", (e) => {
+  drag = false;
+  if (e.button === 0 && !e.shiftKey && moved < 5) selectAt(e.clientX, e.clientY);
+});
+canvas.addEventListener("wheel", (e) => {
+  e.preventDefault();
+  camera.dolly(e.deltaY * 0.001);
+}, { passive: false });
+canvas.addEventListener("contextmenu", (e) => e.preventDefault());
+
+function selectAt(cx, cy) {
+  const r = canvas.getBoundingClientRect();
+  const nx = ((cx - r.left) / r.width) * 2 - 1;
+  const ny = 1 - ((cy - r.top) / r.height) * 2;
+  const ray = camera.getRay(nx, ny, canvas.width / canvas.height);
+  const hit = pick(ray, scene);
+  for (const o of scene.objects) o.selected = false;
+  if (hit) {
+    hit.object.selected = true;
+    selLabel.textContent = "sel: object #" + hit.object.id + " @ " + hit.distance.toFixed(2) + "m";
+  } else {
+    selLabel.textContent = "sel: none (click a cube)";
+  }
+}
+
+// --- shading toggle + snapshot ---
+const MODES = ["studio", "solid", "wire"];
+let modeIdx = 0;
+const shadeBtn = document.getElementById("shading");
+shadeBtn.onclick = () => {
+  modeIdx = (modeIdx + 1) % MODES.length;
+  renderer.setShading(MODES[modeIdx]);
+  shadeBtn.textContent = "shading: " + MODES[modeIdx];
+};
+document.getElementById("snap").onclick = () => {
+  renderer.render(scene, camera);
+  canvas.toBlob((b) => {
+    const a = document.createElement("a");
+    a.href = URL.createObjectURL(b);
+    a.download = "blendclone-m2.png";
+    a.click();
+    setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+  });
+};
+
+// --- main loop + fps ---
+let frames = 0, t0 = performance.now();
+function frame(t) {
+  const draws = renderer.render(scene, camera);
+  frames++;
+  const dt = t - t0;
+  if (dt > 500) {
+    stats.textContent = (frames * 1000 / dt).toFixed(0) + "fps · " +
+      draws + " draws · 24 tris · WebGL2 OK";
+    frames = 0; t0 = t;
+  }
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+</script>
+</body>
+</html>
