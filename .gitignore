@@ -35,3 +35,35 @@ Thumbs.db
 # OneDrive lock files
 *.tmp
 ~$*
+
+# Build outputs - large, crash editor git server
+build/
+dist/
+*.exe
+*.spec
+*.toc
+*.pkg
+*.pyz
+base_library.zip
+warn-*.txt
+Analysis-*.toc
+COLLECT-*.toc
+EXE-*.toc
+PYZ-*.toc
+PKG-*.toc
+
+# ML models / datasets - too large for git
+*.pt
+*.bin
+*.onnx
+ju6_sharp/data/
+ju6_sharp/*.pt
+ju6_sharp/*.txt
+ju6_sharp/*.csv
+*.csv
+
+# Generated images / snapshots
+diag_*.png
+snapshot_*.png
+assets/
+blendclone/src/
